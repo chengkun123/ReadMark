@@ -1,5 +1,6 @@
 package com.mycompany.readmark.books;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,18 +8,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 
+
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.common.DatabaseTableSingleton;
 import com.mycompany.readmark.common.RetrofitSingleton;
+
+import com.mycompany.readmark.detail.BookDetailFragment;
 import com.mycompany.readmark.search.SearchActivity;
 import com.mycompany.readmark.search.SearchedInfoBean;
+import com.mycompany.readmark.widget.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,20 +46,41 @@ public class BooksFragment extends Fragment {
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private BooksAdapter mBooksAdapter;
     private FloatingActionButton mFabButton;
+    private Toolbar mToolbar;
     private ProgressBar mProgressBar;
+
 
     private Observer<BookListBean> mObserver;
     private List<BooksBean> mDatas;
 
     private DatabaseTableSingleton mDatabaseTableSingleton;
+    private RecyclerItemClickListener.OnItemClickListener mOnItemClickListener;
+    private OnFabClickListener mOnFabClickListener;
+
+    public interface OnFabClickListener{
+        void onFabClick();
+    }
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_books, null);
+
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+        mOnFabClickListener = (OnFabClickListener)getActivity();
+        //按照Activity中的逻辑，应该在Activity完成之前的任何回调方法中调用以下这句
+        mOnItemClickListener = (RecyclerItemClickListener.OnItemClickListener)getActivity();
+
         initRecyclerView(view);
         initFab(view);
         initObserver();
+
         return view;
+    }
+
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
     }
 
 
@@ -64,6 +92,10 @@ public class BooksFragment extends Fragment {
         mBooksAdapter = new BooksAdapter(getActivity(), mDatas);
         mRecyclerView.setAdapter(mBooksAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        //利用Touch事件，回调我们自己的回调函数
+        mRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(getActivity(), mOnItemClickListener, mBooksAdapter));
     }
 
 
@@ -72,8 +104,9 @@ public class BooksFragment extends Fragment {
         mFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                startActivityForResult(intent, REQUEST_KEYWORD);
+                //让Activity启动Activity
+                mOnFabClickListener.onFabClick();
+
             }
         });
     }
@@ -93,11 +126,11 @@ public class BooksFragment extends Fragment {
 
             @Override
             public void onNext(BookListBean bookListBean) {
-                Log.e("?????", "?????");
+                //Log.e("?????", "?????");
                 //Toast.makeText(getContext(), "asdasd", Toast.LENGTH_SHORT).show();
                 mDatas.clear();
                 mDatas = bookListBean.getBooks();
-                Log.e("?????", mDatas.get(0).getAuthor().get(0));
+                //Log.e("?????", mDatas.get(0).getAuthor().get(0));
                 mBooksAdapter.upDateBooks(mDatas);
             }
         };
@@ -114,6 +147,7 @@ public class BooksFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mObserver);
     }
+
 
     private void saveSearchInfo(String keyword){
         SearchedInfoBean searchedInfoBean = new SearchedInfoBean();

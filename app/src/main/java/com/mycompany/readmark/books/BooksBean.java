@@ -1,11 +1,12 @@
 package com.mycompany.readmark.books;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Lenovo on 2016/11/19.
  */
-public class BooksBean {
+public class BooksBean implements Serializable{
 
     private RatingBean rating;
     private String subtitle;
@@ -217,7 +218,7 @@ public class BooksBean {
         this.translator = translator;
     }
 
-    public static class RatingBean {
+    public static class RatingBean implements Serializable{
         private int max;
         private int numRaters;
         private String average;
@@ -256,7 +257,7 @@ public class BooksBean {
         }
     }
 
-    public static class ImagesBean {
+    public static class ImagesBean implements Serializable{
         private String small;
         private String large;
         private String medium;
@@ -286,7 +287,7 @@ public class BooksBean {
         }
     }
 
-    public static class TagsBean {
+    public static class TagsBean implements Serializable{
         private int count;
         private String name;
         private String title;

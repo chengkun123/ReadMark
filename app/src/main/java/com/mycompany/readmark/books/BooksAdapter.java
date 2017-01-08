@@ -21,6 +21,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
     private List<BooksBean> mBooksBeanList;
     private LayoutInflater mLayoutInflater;
 
+
     public BooksAdapter(Context context, List<BooksBean> list){
         mLayoutInflater = LayoutInflater.from(context);
         mBooksBeanList = list;
@@ -67,5 +68,8 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
         }
     }
 
+    public BooksBean getBook(int pos){
+        return mBooksBeanList.get(pos);
+    }
 
 }

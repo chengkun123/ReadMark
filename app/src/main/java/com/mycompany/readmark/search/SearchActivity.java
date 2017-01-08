@@ -123,7 +123,7 @@ public class SearchActivity extends AppCompatActivity {
         finish();
     }
 
-    //异步从数据库获取
+    //异步从数据库获取历史查询信息
     private void showSearchedInfo(final Context context){
         Observable.create(new Observable.OnSubscribe<List<SearchedInfoBean>>() {
             @Override
