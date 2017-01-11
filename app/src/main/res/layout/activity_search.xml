@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <include
         layout="@layout/toolbar_layout" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/search_recyclerview"
+    <com.mycompany.readmark.search.FlowLayout
+
+        android:id="@+id/flow_layout"
+        android:padding="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#333333">
 
-    </android.support.v7.widget.RecyclerView>
+    </com.mycompany.readmark.search.FlowLayout>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+    </LinearLayout>

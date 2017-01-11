@@ -14,9 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.widget.TextView;
 
 
 import com.mycompany.readmark.R;
@@ -38,10 +39,11 @@ public class SearchActivity extends AppCompatActivity {
     private static int RESULT_CODE = 2;
     private Toolbar mToolbar;
     private SearchView mSearchView;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private SearchAdapter mSearchAdapter;
-
+    //private RecyclerView mRecyclerView;
+    //private LinearLayoutManager mLinearLayoutManager;
+    //private SearchAdapter mSearchAdapter;
+    private FlowLayout mFlowLayout;
+    private String[] mTags;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,15 +51,18 @@ public class SearchActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
-        mRecyclerView = (RecyclerView)findViewById(R.id.search_recyclerview);
+        mFlowLayout = (FlowLayout) findViewById(R.id.flow_layout);
+        initSearchedInfo(this);
 
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        //mRecyclerView = (RecyclerView)findViewById(R.id.search_recyclerview);
 
-        mSearchAdapter = new SearchAdapter(this);
-        mRecyclerView.setAdapter(mSearchAdapter);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        showSearchedInfo(this);
+        //mLinearLayoutManager = new LinearLayoutManager(this);
+        //mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        //mSearchAdapter = new SearchAdapter(this);
+        //mRecyclerView.setAdapter(mSearchAdapter);
+        //mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
 
     }
 
@@ -123,8 +128,9 @@ public class SearchActivity extends AppCompatActivity {
         finish();
     }
 
-    //异步从数据库获取历史查询信息
-    private void showSearchedInfo(final Context context){
+
+    private void initSearchedInfo(final Context context){
+        //异步从数据库获取历史查询信息
         Observable.create(new Observable.OnSubscribe<List<SearchedInfoBean>>() {
             @Override
             public void call(Subscriber<? super List<SearchedInfoBean>> subscriber) {
@@ -137,10 +143,25 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void call(List<SearchedInfoBean> users) {
                 Log.e("List的大小是", String.valueOf(users.size()));
-                mSearchAdapter.clearDatas();
-                mSearchAdapter.update(users);
+                //mSearchAdapter.clearDatas();
+                //mSearchAdapter.update(users);
+                initTags(users);
             }
         });
+
     }
 
+    private void initTags(List<SearchedInfoBean> list){
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (int i=0; i<10; i++){
+            if(!list.isEmpty() && list.size()-1-i >= 0){
+                TextView textView = (TextView) inflater.inflate(R.layout.textview_tag, mFlowLayout, false);
+                String temp = list.get(list.size()-1-i).getKeyWord();
+                textView.setText(temp);
+                mFlowLayout.addView(textView);
+            }else{
+                break;
+            }
+        }
+    }
 }
