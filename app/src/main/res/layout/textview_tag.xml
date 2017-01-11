@@ -4,6 +4,7 @@
           android:layout_height="wrap_content"
           android:layout_margin="10dp"
           android:background="@drawable/tag_bg"
+          android:textColor="@color/textview_color"
     >
 
 </TextView>

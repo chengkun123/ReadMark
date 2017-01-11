@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.common.DatabaseTableSingleton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -43,7 +44,8 @@ public class SearchActivity extends AppCompatActivity {
     //private LinearLayoutManager mLinearLayoutManager;
     //private SearchAdapter mSearchAdapter;
     private FlowLayout mFlowLayout;
-    private String[] mTags;
+    private List<String> mDatas = new ArrayList<>();
+    private TagAdapter<String> mStringTagAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +54,17 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
         mFlowLayout = (FlowLayout) findViewById(R.id.flow_layout);
-        initSearchedInfo(this);
+
+        for(int i=0; i<10; i++){
+            mDatas.add(i+"");
+        }
+
+        mStringTagAdapter = new TagAdapter<>(this, mDatas);
+        mFlowLayout.setAdapter(mStringTagAdapter);
+        //notify中才会进行View的重置
+        mStringTagAdapter.notifyDataSetChanged();
+
+        //initSearchedInfo(this);
 
         //mRecyclerView = (RecyclerView)findViewById(R.id.search_recyclerview);
 
@@ -152,7 +164,17 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initTags(List<SearchedInfoBean> list){
-        LayoutInflater inflater = LayoutInflater.from(this);
+        //只添加10个数据
+        for (int i=0; i<10; i++){
+            if(!list.isEmpty() && list.size()-1-i >= 0){
+                mDatas.add(list.get(list.size()-1-i).getKeyWord());
+            }else{
+                break;
+            }
+        }
+
+
+        /*LayoutInflater inflater = LayoutInflater.from(this);
         for (int i=0; i<10; i++){
             if(!list.isEmpty() && list.size()-1-i >= 0){
                 TextView textView = (TextView) inflater.inflate(R.layout.textview_tag, mFlowLayout, false);
@@ -162,6 +184,6 @@ public class SearchActivity extends AppCompatActivity {
             }else{
                 break;
             }
-        }
+        }*/
     }
 }

@@ -1,10 +1,13 @@
 package com.mycompany.readmark.search;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,10 @@ import java.util.List;
 public class FlowLayout extends ViewGroup {
     private List<List<View>> mViews = new ArrayList<>();
     private List<Integer> mLineHeight = new ArrayList<>();
+    private AdapterDataSetObserver mDataSetObserver;
+    private ListAdapter mAdapter;
+    private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();;
+
 
 
     public FlowLayout(Context context) {
@@ -192,5 +199,82 @@ public class FlowLayout extends ViewGroup {
     @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new MarginLayoutParams(getContext(), attrs);
+    }
+
+    //为FlowLayout设置(刷新)Adapter
+    public void setAdapter(ListAdapter adapter){
+        //注销监听者
+        if(mAdapter != null && mDataSetObserver != null){
+            mAdapter.unregisterDataSetObserver(mDataSetObserver);
+        }
+        //ViewGroup中的方法
+        removeAllViews();
+        mAdapter = adapter;
+        //注册监听者
+        if(mAdapter != null){
+            mDataSetObserver = new AdapterDataSetObserver();
+            mAdapter.registerDataSetObserver(mDataSetObserver);
+        }
+    }
+
+    public ListAdapter getAdapter(){
+        return mAdapter;
+    }
+
+
+    //此内部类作为一个Adapter的监听者，在Adapter调用notifyDataChanged时
+    //完成View重置的功能
+    class AdapterDataSetObserver extends DataSetObserver{
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            reloadData();
+        }
+
+        @Override
+        public void onInvalidated() {
+            super.onInvalidated();
+        }
+    }
+    //重置所有View并且为View注册监听者
+    private void reloadData(){
+        removeAllViews();
+
+        //重置建每一个子View，添加到FlowLayout中，并设置点击事件监听者
+        for(int i=0; i<mAdapter.getCount(); i++){
+            final int j = i;
+            //View是通过Adapter的getView获得的，
+            // 注意最后一个参数传入FlowLayout，这个方法在内部inflate会用到
+            final View child = mAdapter.getView(j, null, this);
+            //重置点击状态为false
+            mCheckedTagArray.put(i, false);
+            //把通过Adapter获得的View添加到FlowLayout中
+            /*addView(child, new MarginLayoutParams(
+                    new LayoutParams(LayoutParams.WRAP_CONTENT
+                            , LayoutParams.WRAP_CONTENT)));*/
+            //将获得的View添加到FlowLayout中
+            addView(child);
+            //每个View的监听者其实就是它自己
+            child.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //如果这个按钮被点击过,我们改变它的状态
+                    if(mCheckedTagArray.get(j)){
+                        mCheckedTagArray.put(j, false);
+                        child.setSelected(false);
+                    }else{//如果这个按钮没被点击过（这里似乎可以不用这么麻烦）
+                        //把状态清零
+                        for(int k=0; k<mAdapter.getCount(); k++){
+                            mCheckedTagArray.put(k, false);
+                            getChildAt(k).setSelected(false);
+                        }
+                        //将该按钮设为已点击
+                        mCheckedTagArray.put(j, true);
+                        child.setSelected(true);
+                    }
+                }
+            });
+        }// end for
+
     }
 }
