@@ -34,7 +34,7 @@ import rx.functions.Action1;
 /**
  * Created by Lenovo on 2016/11/20.
  */
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity{
 
     private static String SEARCH_KEYWORD = "search_keyword";
     private static int RESULT_CODE = 2;
@@ -54,7 +54,8 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
         mFlowLayout = (FlowLayout) findViewById(R.id.flow_layout);
-
+        //mFlowLayout.setOnTagClickListener(this);
+        //mFlowLayout.setOnTagLongClickListener(this);
         for(int i=0; i<10; i++){
             mDatas.add(i+"");
         }
@@ -63,6 +64,8 @@ public class SearchActivity extends AppCompatActivity {
         mFlowLayout.setAdapter(mStringTagAdapter);
         //notify中才会进行View的重置
         mStringTagAdapter.notifyDataSetChanged();
+
+
 
         //initSearchedInfo(this);
 
@@ -186,4 +189,24 @@ public class SearchActivity extends AppCompatActivity {
             }
         }*/
     }
+
+    /*public void onTagClick(){
+        if(mStringTagAdapter.isDeleteShowed()){
+            mStringTagAdapter.setIsDeleteShowed(false);
+            mStringTagAdapter.notifyDataSetChanged();
+        }else{
+            mStringTagAdapter.setIsDeleteShowed(true);
+            mStringTagAdapter.notifyDataSetChanged();
+        }
+    }*/
+
+    /*public void onTagLongClick(){
+        if(mStringTagAdapter.isDeleteShowed()){
+            mStringTagAdapter.setIsDeleteShowed(false);
+            mStringTagAdapter.notifyDataSetChanged();
+        }else{
+            mStringTagAdapter.setIsDeleteShowed(true);
+            mStringTagAdapter.notifyDataSetChanged();
+        }
+    }*/
 }

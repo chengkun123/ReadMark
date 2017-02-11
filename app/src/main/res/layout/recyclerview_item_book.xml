@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginBottom="2dp"
-                                    android:layout_marginLeft="2dp"
-                                    android:layout_marginRight="2dp"
-                                    android:clickable="true"
-                                    app:cardCornerRadius="10dp"
-                                    app:cardElevation="10dp">
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    android:clickable="true"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp">
 
     <LinearLayout
         style="@style/CardView.Content"
@@ -21,8 +21,8 @@
             android:id="@+id/ivBook"
             android:transitionName="transition_book_img"
             android:layout_marginStart="1dp"
-            android:layout_width="109dp"
-            android:layout_height="135dp"
+            android:layout_width="80dp"
+            android:layout_height="100dp"
             android:src="@mipmap/book1" />
 
         <LinearLayout

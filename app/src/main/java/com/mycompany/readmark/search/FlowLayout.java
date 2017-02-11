@@ -8,6 +8,10 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.TextView;
+
+import com.mycompany.readmark.R;
+import com.mycompany.readmark.widget.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +19,22 @@ import java.util.List;
 /**
  * Created by Lenovo on 2017/1/11.
  */
-public class FlowLayout extends ViewGroup {
+public class FlowLayout extends ViewGroup{
     private List<List<View>> mViews = new ArrayList<>();
     private List<Integer> mLineHeight = new ArrayList<>();
     private AdapterDataSetObserver mDataSetObserver;
-    private ListAdapter mAdapter;
+    private TagAdapter<String> mAdapter;
     private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();;
+    private OnTagLongClickListener mOnTagLongClickListener;
+    private OnTagClickListener mOnTagClickListener;
 
+    public interface OnTagLongClickListener {
+        void onTagLongClick(boolean isDeleteShowed);
+    }
+
+    public interface OnTagClickListener {
+        void onTagClick();
+    }
 
 
     public FlowLayout(Context context) {
@@ -33,7 +46,7 @@ public class FlowLayout extends ViewGroup {
         this(context, attrs, 0);
     }
 
-    //那么构造函数的逻辑都可以写在这个函数中
+
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -44,35 +57,41 @@ public class FlowLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //首先调用View的OnMeasure传入Spec，设置FlowLayout的测量宽高
+        //由于AT_MOST模式和EXACTLY模式MeasuredWidth/Height会选取Spec中的值，所以下面还要支持FlowLayou的参数为wrap_content的情况
+        //这种情况下MeasuredWidth并不一定会选取Spec中的值（即父View提供的可用的最大值）
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //去看源码的话，我们可以发现如果子View是match_parent或wrap_content，父View传入的尺寸是父布局的尺寸
+
+        //首先获取可用的最大值
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int modeWidth = MeasureSpec.getMode(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
         int modeHeight = MeasureSpec.getMode(heightMeasureSpec);
 
-        //为了支持wrap_content属性，我们重新计算该ViewGroup的宽和高
+        //最终宽高
         int width = 0;
         int height = 0;
 
-        //记录每一行的宽度与高度
+        //行宽高
         int lineWidth = 0;
         int lineHeight = 0;
 
         int count = getChildCount();
-        //支持父控件的padding属性
+
+        //为支持FlowLayout的padding属性，在最后返回FlowLayout的测量值时，要加上Padding值
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         int paddingTop = getPaddingTop();
         int paddingBottom = getPaddingBottom();
 
-        //计算在wrap_content情况下的宽高
+        //计算最大行宽、总高度
         for(int i=0; i<count; i++){
-            //对于每一个子View，进行测量
+
             View child = getChildAt(i);
+            //由于自View是TextView（TextView重写了onMeasure支持自己的wrap_content），测量后可以得到正确的测量值
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
             MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
-
+            //获取TextView的测量值
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
 
@@ -81,38 +100,40 @@ public class FlowLayout extends ViewGroup {
 
             //如果需要换行，注意要减去padding
             if (tempWidth > sizeWidth - paddingLeft -paddingRight){
-                //更新width和height
+                //更新最终宽高
                 width = Math.max(lineWidth, width);
                 height += lineHeight;
 
-                //更新lineWidth和lineHeight
+                //更新行宽高
                 lineWidth = childWidth;
                 lineHeight = childHeight + lp.topMargin + lp.bottomMargin;
 
             }else{//如果不需要换行
-                //更新lineHeight和lineWidth
+                //更新行宽高
                 lineHeight = Math.max(lineHeight, childHeight + lp.topMargin + lp.bottomMargin);
                 lineWidth = tempWidth;
-                //更新width(height不需要更新)
+                //更新最终宽
                 width = Math.max(lineWidth, width);
             }
         } // end for
-        //考虑最后一行
+
+        //对当前行处理，更新最终宽高
         height += lineHeight;
         width = Math.max(width, lineWidth);
 
-        Log.e("控件宽度", "" + sizeWidth);
-        Log.e("控件高度", ""+sizeHeight);
-        //注意控件的宽度要加上padding
+        /*Log.e("控件宽度", "" + sizeWidth);
+        Log.e("控件高度", ""+sizeHeight);*/
+
+        //重新设置FlowLayout的MeasuredWidth，
+        // 如果是EXACTLY(对应match_parent和具体值)，就设置Spec中的值，
+        // 如果是AT_MOST（对应wrap_content），就设置为根据子View布局计算的值width。
         setMeasuredDimension(
                 modeWidth == MeasureSpec.EXACTLY ? sizeWidth : width + paddingLeft + paddingRight,
                 modeHeight == MeasureSpec.EXACTLY ? sizeHeight : height + paddingTop + paddingBottom);
-
-
     }
 
 
-
+    //layout方法确定View的位置，onLayout方法确定子View的位置
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         mViews.clear();
@@ -125,13 +146,17 @@ public class FlowLayout extends ViewGroup {
         int lineHeight = 0;
 
         List<View> row = new ArrayList<>();
+
         //支持父控件的padding属性
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         int paddingTop = getPaddingTop();
-        int paddingBottom = getPaddingBottom();
+        //int paddingBottom = getPaddingBottom();
 
-        //为mViews和mLineHeight赋值
+        /*
+        先确定每行的View
+        *
+        * */
         for(int i=0; i<count; i++){
             View child = getChildAt(i);
             MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
@@ -160,10 +185,12 @@ public class FlowLayout extends ViewGroup {
         mViews.add(row);
         mLineHeight.add(lineHeight);
 
-        //用于设置子View的位置，注意开始的位置
+
+        /*
+        * 开始布局子View
+        * */
         int left = paddingLeft;
         int top = paddingTop;
-
         for(int i=0; i<mViews.size(); i++){
 
             for(int j=0; j<mViews.get(i).size(); j++){
@@ -172,7 +199,7 @@ public class FlowLayout extends ViewGroup {
                 if(child.getVisibility() == View.GONE){
                     continue;
                 }
-                //注意这里获得的是父View的LayoutParams
+
                 MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
 
                 int lc = left + lp.leftMargin;
@@ -181,13 +208,7 @@ public class FlowLayout extends ViewGroup {
                 int bc = tc + child.getMeasuredHeight();
 
                 child.layout(lc, tc, rc, bc);
-                /*
-                Log.e("布局了", "第" + i +" "+ j+ "个,"+
-                        "lc:"+ lc+
-                        ",tc:"+ tc+
-                        ",rc" + rc+
-                        ",bc" + bc);
-                */
+
                 left = rc + lp.rightMargin;
             }
             left = paddingTop;
@@ -201,17 +222,19 @@ public class FlowLayout extends ViewGroup {
         return new MarginLayoutParams(getContext(), attrs);
     }
 
-    //为FlowLayout设置(刷新)Adapter
-    public void setAdapter(ListAdapter adapter){
+
+    //为FlowLayout设置新Adapter
+    public void setAdapter(TagAdapter<String> adapter){
         //注销监听者
         if(mAdapter != null && mDataSetObserver != null){
             mAdapter.unregisterDataSetObserver(mDataSetObserver);
         }
-        //ViewGroup中的方法
+
         removeAllViews();
         mAdapter = adapter;
         //注册监听者
         if(mAdapter != null){
+            //在FlowLayout内部创建内部类实现DataSetObserver
             mDataSetObserver = new AdapterDataSetObserver();
             mAdapter.registerDataSetObserver(mDataSetObserver);
         }
@@ -222,13 +245,16 @@ public class FlowLayout extends ViewGroup {
     }
 
 
-    //此内部类作为一个Adapter的监听者，在Adapter调用notifyDataChanged时
-    //完成View重置的功能
+    /*
+    * 此内部类作为一个Adapter的监听者，在Adapter调用notifyDataChanged时
+    完成View重置的功能
+    * */
+
     class AdapterDataSetObserver extends DataSetObserver{
         @Override
         public void onChanged() {
             super.onChanged();
-            reloadData();
+            reloadViews();
         }
 
         @Override
@@ -236,45 +262,51 @@ public class FlowLayout extends ViewGroup {
             super.onInvalidated();
         }
     }
-    //重置所有View并且为View注册监听者
-    private void reloadData(){
+
+
+    //重置所有View
+    private void reloadViews(){
         removeAllViews();
 
-        //重置建每一个子View，添加到FlowLayout中，并设置点击事件监听者
         for(int i=0; i<mAdapter.getCount(); i++){
             final int j = i;
-            //View是通过Adapter的getView获得的，
-            // 注意最后一个参数传入FlowLayout，这个方法在内部inflate会用到
+
+            // 注意最后一个参数传入FlowLayout
             final View child = mAdapter.getView(j, null, this);
             //重置点击状态为false
             mCheckedTagArray.put(i, false);
-            //把通过Adapter获得的View添加到FlowLayout中
-            /*addView(child, new MarginLayoutParams(
-                    new LayoutParams(LayoutParams.WRAP_CONTENT
-                            , LayoutParams.WRAP_CONTENT)));*/
-            //将获得的View添加到FlowLayout中
+
             addView(child);
-            //每个View的监听者其实就是它自己
+
+            child.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(!mAdapter.isDeleteShowed()){
+                        mAdapter.setIsDeleteShowed(true);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    /*
+                    * 开始创建Window，把滑动交给FlowLayout自己做
+                    * */
+                    return true;
+                }
+            });
             child.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //如果这个按钮被点击过,我们改变它的状态
-                    if(mCheckedTagArray.get(j)){
-                        mCheckedTagArray.put(j, false);
-                        child.setSelected(false);
-                    }else{//如果这个按钮没被点击过（这里似乎可以不用这么麻烦）
-                        //把状态清零
-                        for(int k=0; k<mAdapter.getCount(); k++){
-                            mCheckedTagArray.put(k, false);
-                            getChildAt(k).setSelected(false);
-                        }
-                        //将该按钮设为已点击
-                        mCheckedTagArray.put(j, true);
-                        child.setSelected(true);
-                    }
+                    mOnTagClickListener.onTagClick();
                 }
             });
         }// end for
 
+    }
+
+    public void setOnTagLongClickListener(OnTagLongClickListener onTagLongClickListener){
+        mOnTagLongClickListener = onTagLongClickListener;
+    }
+
+    public void setOnTagClickListener(OnTagClickListener onTagClickListener){
+        mOnTagClickListener = onTagClickListener;
     }
 }

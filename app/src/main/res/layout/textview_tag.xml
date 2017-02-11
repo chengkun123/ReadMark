@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_margin="10dp"
-          android:background="@drawable/tag_bg"
-          android:textColor="@color/textview_color"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical" android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_margin="10dp"
     >
 
-</TextView>
+    <TextView
+        android:id="@+id/tag_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/tag_bg"
+        android:textColor="@color/textview_color"
+        />
+    <ImageView
+        android:id="@+id/tag_close"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/edit_text_delete_normal"
+        android:layout_gravity="top|right"
+        />
+
+</FrameLayout>

@@ -9,6 +9,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 
@@ -44,6 +45,8 @@ public class BooksFragment extends Fragment {
     private static int REQUEST_KEYWORD = 1;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private ItemTouchHelper mItemTouchHelper;
+    private BooksItemTouchHelperCallback mBooksItemTouchHelperCallback;
     private BooksAdapter mBooksAdapter;
     private FloatingActionButton mFabButton;
     private Toolbar mToolbar;
@@ -86,13 +89,19 @@ public class BooksFragment extends Fragment {
 
     private void initRecyclerView(View view){
         mRecyclerView = (RecyclerView)view.findViewById(R.id.books_recyclerView);
+        //设置LayoutManager
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        //设置Adapter
         mDatas = new ArrayList<BooksBean>();
         mBooksAdapter = new BooksAdapter(getActivity(), mDatas);
         mRecyclerView.setAdapter(mBooksAdapter);
+        //设置动画
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
+        //设置TouchHelper
+        mBooksItemTouchHelperCallback = new BooksItemTouchHelperCallback(mBooksAdapter);
+        mItemTouchHelper = new ItemTouchHelper(mBooksItemTouchHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
         //利用Touch事件，回调我们自己的回调函数
         mRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getActivity(), mOnItemClickListener, mBooksAdapter));

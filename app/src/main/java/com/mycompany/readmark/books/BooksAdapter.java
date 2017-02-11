@@ -1,6 +1,7 @@
 package com.mycompany.readmark.books;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.mycompany.readmark.R;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Lenovo on 2016/11/18.
  */
-public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder> {
+public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder>
+        implements BooksItemTouchHelperCallback.OnItemMoveAndSwipeListener{
 
     private List<BooksBean> mBooksBeanList;
     private LayoutInflater mLayoutInflater;
@@ -55,7 +58,8 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
         notifyDataSetChanged();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder
+            implements BooksItemTouchHelperCallback.OnItemStateChangeListener{
         public ImageView ivBook;
         public TextView tvTitle;
         public TextView tvDesc;
@@ -66,10 +70,36 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
             tvDesc = (TextView) view.findViewById(R.id.tvDesc);
         }
+
+        public void onItemSelected(){
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
+        public void onItemDrop(){
+            itemView.setBackgroundColor(0);
+        }
     }
 
     public BooksBean getBook(int pos){
         return mBooksBeanList.get(pos);
     }
 
+    public boolean onItemMove(int fromPos, int toPos){
+        if(fromPos < toPos){
+            for(int i = fromPos+1; i <= toPos; i++){
+                Collections.swap(mBooksBeanList, i, i - 1);
+                notifyItemMoved(i, i-1);
+            }
+        }else{
+            for(int i = fromPos; i > toPos; i--){
+                Collections.swap(mBooksBeanList, i, i-1);
+                notifyItemMoved(i, i-1);
+            }
+        }
+        return true;
+    }
+
+    public void onItemSwipe(int pos){
+        mBooksBeanList.remove(pos);
+        notifyItemRemoved(pos);
+    }
 }
