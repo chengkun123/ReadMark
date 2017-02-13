@@ -1,12 +1,27 @@
 package com.mycompany.readmark.search;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.media.audiofx.BassBoost;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -15,11 +30,31 @@ import com.mycompany.readmark.widget.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created by Lenovo on 2017/1/11.
  */
-public class FlowLayout extends ViewGroup{
+public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
+    private float mWindowX;
+    private float mWindowY;
+    private float mXInParent;
+    private float mYInParent;
+    private int mFirstTouchPosition = -1;
+    private int mMode = MODE_NORMAL;
+    private final static int MODE_DRAG = 1;
+    private final static int MODE_NORMAL = 2;
+    private View mOldView;
+    private int mOldPosition;
+    private View mDragView;
+    private int mTempPosition;
+    private float mRelativeX;
+    private float mRelativeY;
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mWindowLayoutParams;
+    private OnTagMovedListener mOnTagMovedListener;
+
+
     private List<List<View>> mViews = new ArrayList<>();
     private List<Integer> mLineHeight = new ArrayList<>();
     private AdapterDataSetObserver mDataSetObserver;
@@ -27,6 +62,11 @@ public class FlowLayout extends ViewGroup{
     private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();;
     private OnTagLongClickListener mOnTagLongClickListener;
     private OnTagClickListener mOnTagClickListener;
+
+    //由于拖拽过后涉及数据的改动，交由Adapter去做
+    public interface OnTagMovedListener{
+        void onTagMoved(int fromPos, int toPos, boolean isMoving);
+    }
 
     public interface OnTagLongClickListener {
         void onTagLongClick(boolean isDeleteShowed);
@@ -48,11 +88,14 @@ public class FlowLayout extends ViewGroup{
 
 
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        this(context, attrs, defStyleAttr, 0);
+
     }
 
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        //这个WindowManager是在Activity中产生的
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
     @Override
@@ -232,6 +275,7 @@ public class FlowLayout extends ViewGroup{
 
         removeAllViews();
         mAdapter = adapter;
+        mOnTagMovedListener = (OnTagMovedListener)mAdapter;
         //注册监听者
         if(mAdapter != null){
             //在FlowLayout内部创建内部类实现DataSetObserver
@@ -267,31 +311,15 @@ public class FlowLayout extends ViewGroup{
     //重置所有View
     private void reloadViews(){
         removeAllViews();
-
         for(int i=0; i<mAdapter.getCount(); i++){
             final int j = i;
-
             // 注意最后一个参数传入FlowLayout
             final View child = mAdapter.getView(j, null, this);
             //重置点击状态为false
             mCheckedTagArray.put(i, false);
-
             addView(child);
-
-            child.setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if(!mAdapter.isDeleteShowed()){
-                        mAdapter.setIsDeleteShowed(true);
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-                    /*
-                    * 开始创建Window，把滑动交给FlowLayout自己做
-                    * */
-                    return true;
-                }
-            });
+            //长按和点击事件
+            child.setOnLongClickListener(this);
             child.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -299,6 +327,291 @@ public class FlowLayout extends ViewGroup{
                 }
             });
         }// end for
+
+    }
+
+    /*
+    * 用于初始化坐标
+    * */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()){
+            case MotionEvent.ACTION_DOWN:
+
+                mWindowX = ev.getRawX();
+                mWindowY = ev.getRawY();
+                mXInParent = ev.getX();
+                mYInParent = ev.getY();
+                mFirstTouchPosition = pointToPosition(mXInParent, mYInParent);
+                Log.e("dispatch测试",""+mFirstTouchPosition);
+
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+
+        }
+
+        return super.dispatchTouchEvent(ev);
+    }
+
+    /*
+    * 如果有移动的动作，那么由FlowLayout接管
+    * */
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean intercepted = false;
+
+        switch (ev.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                intercepted = false;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                //当开始Move的时候，事件交由FlowLayout处理
+                intercepted = true;
+                break;
+            case MotionEvent.ACTION_UP:
+                //getParent().requestDisallowInterceptTouchEvent(true);
+                intercepted = true;
+                break;
+            default:
+                break;
+        }
+        //默认不拦截,也就是只有Down的时候不拦截，move和up都会被拦截
+        return intercepted;
+    }
+
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //先处理一下event
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                Log.e("FlowLayout", ""+"DOWN");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                //这里处理移动
+                if(mMode == MODE_DRAG){
+                    float wx = event.getRawX() - mRelativeX;
+                    float wy = event.getRawY() - mRelativeY;
+                    //移动Window
+                    if(mWindowLayoutParams != null){
+                        mWindowLayoutParams.x = (int)wx;
+                        mWindowLayoutParams.y = (int)wy;
+                        mWindowManager.updateViewLayout(mDragView, mWindowLayoutParams);
+                    }
+
+                    float xInparent = event.getX();
+                    float yInparent = event.getY();
+
+                    int dropPos = pointToPosition(xInparent, yInparent);
+
+                    if(dropPos == mOldPosition || dropPos == -1){
+                        break;
+                    }
+                    startMove(dropPos);
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+
+                if(mMode == MODE_DRAG){
+                    //需要进行WindowManager的释放
+                    if(mDragView != null){
+                        mWindowManager.removeView(mDragView);
+                        mDragView = null;
+                        mWindowLayoutParams = null;
+                        Log.e("dragview为空", ""+(mDragView == null));
+                        Log.e("layoutparams为空", ""+(mWindowLayoutParams == null));
+                    }
+                    if(mOldPosition == mTempPosition || mTempPosition == -1){
+                        getChildAt(mTempPosition).setVisibility(VISIBLE);
+                    }else{
+                        mOnTagMovedListener.onTagMoved(mOldPosition, mTempPosition, false);
+                    }
+                    mMode = MODE_NORMAL;
+                }
+
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void startMove(int dropPosition){
+        TranslateAnimation animation;
+        //后移
+        if(dropPosition < mTempPosition){
+            for(int i=dropPosition; i<mTempPosition; i++){
+                View preView = getChildAt(i);
+                View nextView = getChildAt(i+1);
+                //移动效果理想
+                float xTranslation = (nextView.getLeft() - preView.getLeft()) * 1f / preView.getWidth();
+                float yTranslation = (nextView.getTop() - preView.getTop()) * 1f / preView.getHeight();
+
+                animation = new TranslateAnimation(
+                        Animation.RELATIVE_TO_SELF
+                        , 0
+                        , Animation.RELATIVE_TO_SELF
+                        , xTranslation
+                        , Animation.RELATIVE_TO_SELF
+                        , 0
+                        , Animation.RELATIVE_TO_SELF
+                        , yTranslation);
+
+                animation.setInterpolator(new LinearInterpolator());
+                animation.setDuration(100);
+                animation.setFillAfter(true);
+
+                if(i == mTempPosition - 1){
+                    animation.setAnimationListener(animationListener);
+                }
+                preView.startAnimation(animation);
+            }
+        }else{
+            for(int i=mTempPosition; i<dropPosition; i++){
+                View preView = getChildAt(i);
+                View nextView = getChildAt(i+1);
+                float xTranslation = (preView.getLeft() - nextView.getLeft()) * 1f / nextView.getWidth();
+                float yTranslation = (preView.getTop() - nextView.getTop()) * 1f / nextView.getHeight();
+                animation = new TranslateAnimation(
+                        Animation.RELATIVE_TO_SELF
+                        , 0
+                        , Animation.RELATIVE_TO_SELF
+                        , xTranslation
+                        , Animation.RELATIVE_TO_SELF
+                        , 0
+                        , Animation.RELATIVE_TO_SELF
+                        , yTranslation);
+                animation.setInterpolator(new LinearInterpolator());
+                animation.setDuration(100);
+                animation.setFillAfter(true);
+                if(i == dropPosition - 1){
+                    animation.setAnimationListener(animationListener);
+                }
+                nextView.startAnimation(animation);
+            }
+        }
+
+        mTempPosition = dropPosition;
+    }
+
+    //内部类实现接口
+    Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            mOnTagMovedListener.onTagMoved(mOldPosition, mTempPosition, true);
+            mOldPosition = mTempPosition;
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
+
+    /*
+            * 根据点的坐标判断是第几个子View
+            * */
+    private int pointToPosition(float x, float y){
+        Rect area = new Rect();
+        final int count = getChildCount();
+        for(int i=0; i<count; i++){
+            final View child = getChildAt(i);
+            if(child.getVisibility() == View.VISIBLE){
+                child.getHitRect(area);
+                if(area.contains((int)x, (int)y)){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        /*//有个疑问，这里为什么和dispatch中的不同
+        int position = pointToPosition(mXInParent, mYInParent);
+        Log.e("长按中测试",""+position);*/
+        return afterLongClick(v, mFirstTouchPosition);
+    }
+
+    /*
+        * 长按Tag后开始处理拖拽
+        * */
+    private boolean afterLongClick(View v, int pos){
+        if(mMode == MODE_DRAG || pos == -1){
+            return false;
+        }
+        mOldView = v;
+        mOldView.setVisibility(INVISIBLE);
+        Log.e("oldView的状态", ""+ mOldView.getVisibility());
+        mOldPosition = pos;
+        mTempPosition = pos;
+        mRelativeX = mWindowX - v.getLeft() - this.getLeft();
+        mRelativeY = mWindowY - v.getTop() - this.getTop();
+
+        Log.e("父控件left的坐标", ""+ this.getLeft());
+        Log.e("父控件top的坐标", ""+ this.getTop());
+        Log.e("子控件left的坐标", ""+ v.getLeft());
+        Log.e("子控件top的坐标", ""+ v.getTop());
+        Log.e("touch的left", ""+ mWindowX);
+        Log.e("touch的top", ""+ mWindowY);
+        Log.e("touch相对于TextView的left坐标", ""+ mRelativeX);
+        Log.e("touch相对于TextView的top坐标", ""+ mRelativeY);
+        Log.e("Manager不空", ""+ (mWindowManager != null));
+
+        if(Build.VERSION.SDK_INT >= 23){
+            if(Settings.canDrawOverlays(getContext())){
+                initWindow();
+            }else{
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                getContext().startActivity(intent);
+            }
+        }else{
+            initWindow();
+        }
+        return true;
+    }
+
+    private void initWindow(){
+        if(mDragView == null){
+            mDragView = View.inflate(getContext(), R.layout.textview_tag, null);
+            //mDragView.setBackgroundColor(Color.LTGRAY);
+            ImageView cross = (ImageView) mDragView.findViewById(R.id.tag_close);
+            cross.setVisibility(INVISIBLE);
+            TextView tv = (TextView) mDragView.findViewById(R.id.tag_textview);
+            tv.setText(((TextView)mOldView.findViewById(R.id.tag_textview)).getText());
+        }
+        if(mWindowLayoutParams == null){
+            mWindowLayoutParams = new WindowManager.LayoutParams();
+            //根据原TextView形成新的Window
+            mWindowLayoutParams.width = mOldView.getWidth();
+            mWindowLayoutParams.height = mOldView.getHeight();
+            //这里并没有计算标题栏？
+            mWindowLayoutParams.x = mOldView.getLeft() + this.getLeft();
+            mWindowLayoutParams.y = mOldView.getTop() + this.getTop();
+
+            mWindowLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+            mWindowLayoutParams.format = PixelFormat.RGBA_8888;
+            mWindowLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+            mWindowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            //mWindowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+
+            //mOldView.setVisibility(INVISIBLE);
+        }
+
+        mWindowManager.addView(mDragView, mWindowLayoutParams);
+        mMode = MODE_DRAG;
+        Log.e("dragview已创建",""+mDragView);
+        Log.e("测试",""+mMode);
+        Log.e("dragview 和 oldview相等","" + (mOldView == mDragView));
 
     }
 

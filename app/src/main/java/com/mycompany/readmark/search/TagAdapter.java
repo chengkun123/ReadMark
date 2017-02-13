@@ -16,10 +16,12 @@ import java.util.List;
 /**
  * Created by Lenovo on 2017/1/11.
  */
-public class TagAdapter<T> extends BaseAdapter {
+public class TagAdapter<T> extends BaseAdapter implements FlowLayout.OnTagMovedListener{
     private final Context mContext;
     private final List<T> mDataList;
     private boolean isDeleteShowed;
+    private boolean isTagMoving;
+    private int mTempPos;
 
     public TagAdapter(Context context, List<T> dataList){
         this.mContext = context;
@@ -51,9 +53,13 @@ public class TagAdapter<T> extends BaseAdapter {
 
         T t = mDataList.get(position);
 
-        close.setVisibility(isDeleteShowed ? View.VISIBLE : View.GONE);
+        close.setVisibility(View.INVISIBLE);
         if(t instanceof String){
             textView.setText((String)t);
+        }
+
+        if(position == mTempPos && isTagMoving){
+            view.setVisibility(View.INVISIBLE);
         }
 
         return view;
@@ -76,9 +82,20 @@ public class TagAdapter<T> extends BaseAdapter {
 
     }
 
-    public void onTagLongClick(boolean isDeleteShowed){
+    /*public void onTagLongClick(boolean isDeleteShowed){
         if(isDeleteShowed){
             notifyDataSetChanged();
         }
+    }*/
+
+    public void onTagMoved(int fromPos, int toPos, boolean isMoving){
+        T t = mDataList.get(fromPos);
+        mDataList.remove(fromPos);
+        mDataList.add(toPos, t);
+
+        isTagMoving = isMoving;
+        mTempPos = toPos;
+
+        notifyDataSetChanged();
     }
 }
