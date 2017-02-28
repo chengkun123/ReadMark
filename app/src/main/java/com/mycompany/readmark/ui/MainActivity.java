@@ -1,7 +1,6 @@
 package com.mycompany.readmark.ui;
 
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,24 +10,27 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
 
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.books.BooksBean;
 import com.mycompany.readmark.books.BooksFragment;
 import com.mycompany.readmark.detail.BookDetailFragment;
-import com.mycompany.readmark.search.SearchActivity;
+import com.mycompany.readmark.themechangeframe.DayNight;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
+import com.mycompany.readmark.themechangeframe.ThemeChanger;
 import com.mycompany.readmark.widget.RecyclerItemClickListener;
-
 
 public class MainActivity extends AppCompatActivity
         implements RecyclerItemClickListener.OnItemClickListener
         , BookDetailFragment.OnBackArrowPressedListener
-        , BooksFragment.OnFabClickListener{
+        , BooksFragment.OnFabClickListener
+        , NavigationView.OnNavigationItemSelectedListener {
     //private Observer<BookListBean> mObserver;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -38,41 +40,80 @@ public class MainActivity extends AppCompatActivity
     private BooksFragment mBooksFragment;
     private BookDetailFragment mBookDetailFragment;
 
+    private ThemeChangeHelper mThemeChangeHelper;
+    private ThemeChanger mThemeChanger;
+
+    private Button testButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initHelper();
+        initTheme();
         setContentView(R.layout.activity_main);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        initViews();
+        //initFragment(savedInstanceState);
+        initChanger();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
+
+    private void initHelper(){
+        mThemeChangeHelper = new ThemeChangeHelper(this);
+    }
+
+    private void initTheme(){
+        if(mThemeChangeHelper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
+    }
+
+    private void initViews(){
+        mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //testButton = (Button) findViewById(R.id.test_button);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_drawer);
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open,
                 R.string.drawer_close);
         //使左上的图标发生变化
         mDrawerToggle.syncState();
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-
-        //还未初始化Drawer的点击事件
-
-        //初始化Fragment
+    }
+    private void initFragment(Bundle savedInstanceState){
         mBooksFragment = new BooksFragment();
-
         if(savedInstanceState == null){
-            //进入BooksFrangment
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame_content, mBooksFragment)
                     .commit();
         }
+    }
 
-
+    private void initChanger(){
+        mThemeChanger = new ThemeChanger.Builder(this)
+                .addSchemedBgColorSetter(R.id.navigation_view, R.attr.myBackground)
+                .addSchemedBgColorSetter(R.id.main_app_bar, R.attr.myBackground)
+                .addSchemedBgColorSetter(R.id.frame_content, R.attr.myBackground)
+                .create();
     }
 
     //进入DetailFragment
     public void onItemClick(View view, int pos, BooksBean book){
         FragmentManager fm = getSupportFragmentManager();
-
-        //Toast.makeText(this, "点击执行了", Toast.LENGTH_SHORT).show();
         mBookDetailFragment = BookDetailFragment.newInstance(book);
         fm.beginTransaction()
                 .hide(mBooksFragment)
@@ -91,8 +132,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onFabClick(){
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, 1);
+        Log.e("点击了按钮", "");
+        /*Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, 1);*/
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -125,5 +167,31 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_item_book:
+                if (mThemeChangeHelper.isDay()) {
+                    Log.e("变成晚上", "..");
+                    mThemeChangeHelper.setMode(DayNight.NIGHT);
+
+                    mThemeChanger.setTheme(R.style.NightTheme);
+                    //testButton.setBackgroundColor(Color.LTGRAY);
+
+
+                } else {
+                    Log.e("变成白天", "..");
+                    mThemeChangeHelper.setMode(DayNight.DAY);
+
+                    mThemeChanger.setTheme(R.style.DayTheme);
+                    //testButton.setBackgroundColor(0);
+                }
+                break;
+        }
+        item.setChecked(true);
+        mDrawerLayout.closeDrawers();
+        return true;
     }
 }

@@ -4,7 +4,10 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -13,6 +16,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -26,6 +31,7 @@ import com.mycompany.readmark.common.RetrofitSingleton;
 import com.mycompany.readmark.detail.BookDetailFragment;
 import com.mycompany.readmark.search.SearchActivity;
 import com.mycompany.readmark.search.SearchedInfoBean;
+import com.mycompany.readmark.ui.MainActivity;
 import com.mycompany.readmark.widget.RecyclerItemClickListener;
 
 import java.util.ArrayList;
@@ -51,7 +57,7 @@ public class BooksFragment extends Fragment {
     private FloatingActionButton mFabButton;
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
-
+    private ActionBarDrawerToggle mFgDrawerToggle;
 
     private Observer<BookListBean> mObserver;
     private List<BooksBean> mDatas;
@@ -59,27 +65,43 @@ public class BooksFragment extends Fragment {
     private DatabaseTableSingleton mDatabaseTableSingleton;
     private RecyclerItemClickListener.OnItemClickListener mOnItemClickListener;
     private OnFabClickListener mOnFabClickListener;
+    private OnToolbarCompletedListener mOnToolbarCompletedListener;
 
     public interface OnFabClickListener{
         void onFabClick();
     }
 
+    public interface OnToolbarCompletedListener{
+        void onToolbarCompleted(Toolbar toolbar);
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_books, null);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-
+        mToolbar = (Toolbar) view.findViewById(R.id.books_toolbar);
         mOnFabClickListener = (OnFabClickListener)getActivity();
+
         //按照Activity中的逻辑，应该在Activity完成之前的任何回调方法中调用以下这句
         mOnItemClickListener = (RecyclerItemClickListener.OnItemClickListener)getActivity();
+        mOnToolbarCompletedListener = (OnToolbarCompletedListener)getActivity();
 
         initRecyclerView(view);
         initFab(view);
         initObserver();
 
+        mOnToolbarCompletedListener.onToolbarCompleted(mToolbar);
         return view;
     }
+
+
 
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
@@ -173,5 +195,13 @@ public class BooksFragment extends Fragment {
                 doSearch(data.getStringExtra("search_keyword"));
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //先清除Activity中的menu
+        Log.e("BooksFragment", "onCreateOptionsMenu()");
+        menu.clear();
+        inflater.inflate(R.menu.menu_books, menu);
     }
 }
