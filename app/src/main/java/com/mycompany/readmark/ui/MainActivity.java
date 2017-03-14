@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         initTheme();
         setContentView(R.layout.activity_main);
         initViews();
-        //initFragment(savedInstanceState);
+        initFragment(savedInstanceState);
         initChanger();
 
     }
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        View view = mBooksFragment.getView();
 
 
     }

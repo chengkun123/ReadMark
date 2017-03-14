@@ -41,6 +41,7 @@ import java.util.Map;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.internal.operators.OperatorMap;
 import rx.schedulers.Schedulers;
 
 /**
@@ -54,7 +55,7 @@ public class BooksFragment extends Fragment {
     private ItemTouchHelper mItemTouchHelper;
     private BooksItemTouchHelperCallback mBooksItemTouchHelperCallback;
     private BooksAdapter mBooksAdapter;
-    private FloatingActionButton mFabButton;
+    //private FloatingActionButton mFabButton;
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
     private ActionBarDrawerToggle mFgDrawerToggle;
@@ -86,18 +87,18 @@ public class BooksFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_books, null);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mToolbar = (Toolbar) view.findViewById(R.id.books_toolbar);
+        //mToolbar = (Toolbar) view.findViewById(R.id.books_toolbar);
         mOnFabClickListener = (OnFabClickListener)getActivity();
 
         //按照Activity中的逻辑，应该在Activity完成之前的任何回调方法中调用以下这句
         mOnItemClickListener = (RecyclerItemClickListener.OnItemClickListener)getActivity();
-        mOnToolbarCompletedListener = (OnToolbarCompletedListener)getActivity();
+        //mOnToolbarCompletedListener = (OnToolbarCompletedListener)getActivity();
 
         initRecyclerView(view);
-        initFab(view);
+        //initFab(view);
         initObserver();
 
-        mOnToolbarCompletedListener.onToolbarCompleted(mToolbar);
+        //mOnToolbarCompletedListener.onToolbarCompleted(mToolbar);
         return view;
     }
 
@@ -130,7 +131,7 @@ public class BooksFragment extends Fragment {
     }
 
 
-    private void initFab(View view){
+    /*private void initFab(View view){
         mFabButton = (FloatingActionButton) view.findViewById(R.id.fab_normal);
         mFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,7 +141,7 @@ public class BooksFragment extends Fragment {
 
             }
         });
-    }
+    }*/
 
     private void initObserver(){
         //初始化观察者
@@ -177,6 +178,8 @@ public class BooksFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mObserver);
+
+
     }
 
 

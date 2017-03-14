@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
+        <!--
         <android.support.v7.widget.Toolbar
             android:id="@+id/books_toolbar"
             android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:background="?attr/colorPrimary"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
+        -->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/books_recyclerView"
@@ -27,6 +27,7 @@
     </LinearLayout>
 
 
+    <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_normal"
         android:layout_width="wrap_content"
@@ -39,7 +40,7 @@
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
         />
-
+    -->
 
     <ProgressBar
         android:id="@+id/progressBar"
