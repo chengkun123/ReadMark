@@ -1,4 +1,4 @@
-package com.mycompany.readmark.widget;
+package com.mycompany.readmark.books;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

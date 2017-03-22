@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.mycompany.readmark.base.BaseApplication;
+import com.mycompany.readmark.marker.MarkerBean;
 import com.mycompany.readmark.search.SearchedInfoBean;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class DatabaseTableSingleton {
     private SQLiteDatabase mDatabase;
 
     private static DatabaseTableSingleton sDatabaseTableSingleton;
-    //这里只能用这种单例，用其他的会产生问题。
+    //这里只能用这种单例，用其他的会产生问题。暂时不知道原因
     public synchronized static DatabaseTableSingleton getDatabaseTable(Context context){
         if (sDatabaseTableSingleton == null){
             sDatabaseTableSingleton = new DatabaseTableSingleton(context);
@@ -87,6 +88,7 @@ public class DatabaseTableSingleton {
         Log.e("进行了一次存入", info.getKeyWord());
     }
 
+
     public List<SearchedInfoBean> loadSearchedInfo(){
         List<SearchedInfoBean> list = new ArrayList<>();
         Cursor cursor = mDatabase.query("BookSearch", null, null, null, null, null, null);
@@ -105,7 +107,41 @@ public class DatabaseTableSingleton {
         return list;
     }
 
+    public void saveMarkerInfo(MarkerBean info){
+        ContentValues values = new ContentValues();
+        values.put("book_name", info.getMarkerName());
+        values.put("book_image_url", info.getImageUrl());
+        values.put("book_percent", info.getProgress());
+        mDatabase.insert("BookMarker", null, values);
+        Log.e("进行了一次存入", "存入的名字是"+info.getMarkerName());
+    }
 
+
+    public List<MarkerBean> loadMarkerInfo(){
+        List<MarkerBean> list = new ArrayList<>();
+        Cursor cursor = mDatabase.query("BookMarker", null, null, null, null, null, null, null);
+        if(cursor.moveToFirst()){
+            do {
+                MarkerBean bean = new MarkerBean();
+                bean.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                bean.setMarkerName(cursor.getString(cursor.getColumnIndex("book_name")));
+                bean.setImageUrl(cursor.getString(cursor.getColumnIndex("book_image_url")));
+                bean.setProgress(cursor.getFloat(cursor.getColumnIndex("book_percent")));
+                list.add(bean);
+            }while (cursor.moveToNext());
+        }
+        if (cursor != null){
+            cursor.close();
+        }
+
+        return list;
+
+    }
+
+    public void deleteMarker(String url){
+        mDatabase.delete("BookMarker", "book_image_url = ?", new String[]{url});
+
+    }
 
 
     private static class DatabaseOpenHelper extends SQLiteOpenHelper{
@@ -117,6 +153,13 @@ public class DatabaseTableSingleton {
                 + "book_author text)";
 
 
+        public static final String CREATE_INFO_IN_MARKER = "create table BookMarker("
+                + "id integer primary key autoincrement,"
+                + "book_name text,"
+                + "book_image_url text,"
+                + "book_percent float)";
+
+
         DatabaseOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
             super(context, name, factory, version);
 
@@ -124,12 +167,14 @@ public class DatabaseTableSingleton {
 
         public void onCreate(SQLiteDatabase db){
             db.execSQL(CREATE_INFO_IN_SEARCH);
+            db.execSQL(CREATE_INFO_IN_MARKER);
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
             Log.d(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS" + CREATE_INFO_IN_SEARCH);
+            db.execSQL("DROP TABLE IF EXISTS" + CREATE_INFO_IN_MARKER);
         }
     }
 }

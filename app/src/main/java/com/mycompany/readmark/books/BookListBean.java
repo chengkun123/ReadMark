@@ -1,5 +1,6 @@
 package com.mycompany.readmark.books;
 
+import android.os.HandlerThread;
 import android.widget.ListView;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import okhttp3.OkHttpClient;
  * Created by Lenovo on 2016/11/8.
  */
 public class BookListBean {
-
     private int count;
     private int start;
     private int total;

@@ -1,13 +1,10 @@
 package com.mycompany.readmark.books;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -28,11 +25,7 @@ import com.mycompany.readmark.R;
 import com.mycompany.readmark.common.DatabaseTableSingleton;
 import com.mycompany.readmark.common.RetrofitSingleton;
 
-import com.mycompany.readmark.detail.BookDetailFragment;
-import com.mycompany.readmark.search.SearchActivity;
 import com.mycompany.readmark.search.SearchedInfoBean;
-import com.mycompany.readmark.ui.MainActivity;
-import com.mycompany.readmark.widget.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +34,6 @@ import java.util.Map;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.internal.operators.OperatorMap;
 import rx.schedulers.Schedulers;
 
 /**

@@ -1,4 +1,4 @@
-package com.mycompany.readmark.books.FloatingMenu;
+package com.mycompany.readmark.customview.FloatingActionButton;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -48,6 +48,12 @@ public class MultiFloatingActionButton extends ViewGroup {
     public interface OnFabItemClickListener{
         void onFabItemClick(TagFabLayout view, int pos);
     }
+
+    public void setOnFabItemClickListener(OnFabItemClickListener onFabItemClickListener){
+        mOnFabItemClickListener = onFabItemClickListener;
+    }
+
+
 
     public MultiFloatingActionButton(Context context) {
         this(context, null);

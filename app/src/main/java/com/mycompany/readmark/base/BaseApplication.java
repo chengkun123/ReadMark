@@ -2,6 +2,7 @@ package com.mycompany.readmark.base;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.AsyncTask;
 
 /**
  * Created by Lenovo on 2016/11/22.

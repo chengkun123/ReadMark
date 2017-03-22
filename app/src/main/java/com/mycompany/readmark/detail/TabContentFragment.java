@@ -12,11 +12,11 @@ import com.mycompany.readmark.R;
 /**
  * Created by Lenovo on 2017/1/5.
  */
-public class ContentFragment extends Fragment {
-    public static ContentFragment newInstance(String info){
+public class TabContentFragment extends Fragment {
+    public static TabContentFragment newInstance(String info){
         Bundle args = new Bundle();
         args.putString("info", info);
-        ContentFragment fragment = new ContentFragment();
+        TabContentFragment fragment = new TabContentFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -28,4 +28,7 @@ public class ContentFragment extends Fragment {
         textView.setText(info);
         return view;
     }
+
+
+
 }

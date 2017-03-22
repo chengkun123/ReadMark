@@ -20,22 +20,29 @@ import android.widget.Button;
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.books.BooksBean;
 import com.mycompany.readmark.books.BooksFragment;
+import com.mycompany.readmark.customview.FloatingActionButton.MultiFloatingActionButton;
+import com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout;
+import com.mycompany.readmark.detail.BookDetailActivity;
 import com.mycompany.readmark.detail.BookDetailFragment;
+import com.mycompany.readmark.marker.MarkerActivity;
+import com.mycompany.readmark.search.SearchActivity;
 import com.mycompany.readmark.themechangeframe.DayNight;
 import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.themechangeframe.ThemeChanger;
-import com.mycompany.readmark.widget.RecyclerItemClickListener;
+import com.mycompany.readmark.books.RecyclerItemClickListener;
 
 public class MainActivity extends AppCompatActivity
         implements RecyclerItemClickListener.OnItemClickListener
-        , BookDetailFragment.OnBackArrowPressedListener
+        /*, BookDetailFragment.OnBackArrowPressedListener*/
         , BooksFragment.OnFabClickListener
-        , NavigationView.OnNavigationItemSelectedListener {
+        , NavigationView.OnNavigationItemSelectedListener
+        , MultiFloatingActionButton.OnFabItemClickListener {
     //private Observer<BookListBean> mObserver;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
     private NavigationView mNavigationView;
+    private MultiFloatingActionButton mMultiFloatingActionButton;
 
     private BooksFragment mBooksFragment;
     private BookDetailFragment mBookDetailFragment;
@@ -60,9 +67,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        View view = mBooksFragment.getView();
-
-
+        if(getSupportFragmentManager().findFragmentById(R.id.frame_content) instanceof BooksFragment){
+            mMultiFloatingActionButton.setVisibility(View.VISIBLE);
+            //mToolbar.setVisibility(View.VISIBLE);
+        }
+        
     }
 
     private void initHelper(){
@@ -93,6 +102,10 @@ public class MainActivity extends AppCompatActivity
         //使左上的图标发生变化
         mDrawerToggle.syncState();
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+
+        mMultiFloatingActionButton = (MultiFloatingActionButton) findViewById(R.id.floating_button);
+        mMultiFloatingActionButton.setOnFabItemClickListener(this);
     }
     private void initFragment(Bundle savedInstanceState){
         mBooksFragment = new BooksFragment();
@@ -112,19 +125,10 @@ public class MainActivity extends AppCompatActivity
                 .create();
     }
 
-    //进入DetailFragment
-    public void onItemClick(View view, int pos, BooksBean book){
-        FragmentManager fm = getSupportFragmentManager();
-        mBookDetailFragment = BookDetailFragment.newInstance(book);
-        fm.beginTransaction()
-                .hide(mBooksFragment)
-                .add(R.id.frame_content, mBookDetailFragment)
-                .addToBackStack("main")
-                .commit();
-        Log.e("点击的Book的名称是", book.getTitle());
-    }
+
 
     public void onBackArrowPressed(){
+        mMultiFloatingActionButton.setVisibility(View.VISIBLE);
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction()
                 .remove(mBookDetailFragment)
@@ -134,8 +138,8 @@ public class MainActivity extends AppCompatActivity
 
     public void onFabClick(){
         Log.e("点击了按钮", "");
-        /*Intent intent = new Intent(this, SearchActivity.class);
-        startActivityForResult(intent, 1);*/
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivityForResult(intent, 1);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -194,5 +198,50 @@ public class MainActivity extends AppCompatActivity
         item.setChecked(true);
         mDrawerLayout.closeDrawers();
         return true;
+    }
+
+    @Override
+    public void onFabItemClick(TagFabLayout view, int pos) {
+        switch (pos){
+            case 4:
+                Intent search = new Intent(this, SearchActivity.class);
+                startActivityForResult(search, 1);
+                break;
+            case 3:
+                Intent marker = new Intent(this, MarkerActivity.class);
+                startActivity(marker);
+        }
+    }
+
+
+    //进入DetailActivity
+    public void onItemClick(View view, int pos, BooksBean book){
+        mMultiFloatingActionButton.setVisibility(View.INVISIBLE);
+        mToolbar.setVisibility(View.INVISIBLE);
+
+        Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
+        intent.putExtra("book", book);
+        startActivity(intent);
+
+        /*FragmentManager fm = getSupportFragmentManager();
+        mBookDetailFragment = BookDetailFragment.newInstance(book);
+        fm.beginTransaction()
+                .hide(mBooksFragment)
+                .add(R.id.frame_content, mBookDetailFragment)
+                .addToBackStack("main")
+                .commit();
+        Log.e("点击的Book的名称是", book.getTitle());*/
+    }
+
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(getSupportFragmentManager().findFragmentById(R.id.frame_content) instanceof BooksFragment){
+            mMultiFloatingActionButton.setVisibility(View.VISIBLE);
+            mToolbar.setVisibility(View.VISIBLE);
+        }
+        Log.e("按了回退","按了");
     }
 }

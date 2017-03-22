@@ -1,4 +1,4 @@
-package com.mycompany.readmark.books.FloatingMenu;
+package com.mycompany.readmark.customview.FloatingActionButton;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;

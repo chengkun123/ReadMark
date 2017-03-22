@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.mycompany.readmark.books.FloatingMenu.MultiFloatingActionButton
+<com.mycompany.readmark.customview.FloatingActionButton.MultiFloatingActionButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/FabPlus"
+    android:id="@+id/floating_button"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:backgroundColor="#DB4537"
@@ -11,7 +11,7 @@
     app:animationMode="scale">
     <!-- app:layout_behavior="com.fjl.floatbutton.widget.FabBehavior"
     -->
-    <com.mycompany.readmark.books.FloatingMenu.TagFabLayout
+    <com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:tagText="Download"
@@ -22,9 +22,9 @@
             android:src="@mipmap/ic_add_white_48dp"
             app:backgroundTint="#468cb7"
             app:fabSize="mini" />
-    </com.mycompany.readmark.books.FloatingMenu.TagFabLayout>
+    </com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout>
 
-    <com.mycompany.readmark.books.FloatingMenu.TagFabLayout
+    <com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:tagText="Favorites"
@@ -35,9 +35,9 @@
             android:src="@mipmap/ic_add_white_48dp"
             app:backgroundTint="#818aa7"
             app:fabSize="mini" />
-    </com.mycompany.readmark.books.FloatingMenu.TagFabLayout>
+    </com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout>
 
-    <com.mycompany.readmark.books.FloatingMenu.TagFabLayout
+    <com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:tagText="Send mail"
@@ -48,6 +48,6 @@
             android:src="@mipmap/ic_add_white_48dp"
             app:backgroundTint="#4BB7A7"
             app:fabSize="mini" />
-    </com.mycompany.readmark.books.FloatingMenu.TagFabLayout>
+    </com.mycompany.readmark.customview.FloatingActionButton.TagFabLayout>
 
-</com.mycompany.readmark.books.FloatingMenu.MultiFloatingActionButton>
+</com.mycompany.readmark.customview.FloatingActionButton.MultiFloatingActionButton>
