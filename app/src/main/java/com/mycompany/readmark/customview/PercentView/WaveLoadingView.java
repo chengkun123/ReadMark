@@ -12,9 +12,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
-/**
- * Created by Lenovo on 2017/3/21.
- */
+
 public class WaveLoadingView extends View {
 
     private Paint mWavePaint;
@@ -34,7 +32,7 @@ public class WaveLoadingView extends View {
     private Path mPath;
 
     private boolean isLeft;
-    private int mPercent = 0;
+    private float mPercent = 0;
     private boolean isFirstLoad = true;
 
     public WaveLoadingView(Context context){
@@ -118,7 +116,7 @@ public class WaveLoadingView extends View {
             x = x + mWidth/300;
         }
 
-        y = (int) ((1 - mPercent /100f) * mWidth);
+        y = (int) ((1 - mPercent) * mWidth);
 
 
         //画了一个以方块为底，三阶贝塞尔曲线为顶的图形
@@ -143,7 +141,7 @@ public class WaveLoadingView extends View {
         canvas.drawBitmap(mBitmap, 0, 0, null);
 
         //画百分比
-        String str = mPercent+"";
+        String str = mPercent*100+"";
         mTextPaint.setTextSize(mWidth / 8);
         float txtLength = mTextPaint.measureText(str);
         canvas.drawText(str, mWidth / 2 - txtLength / 2, mWidth / 2 + mWidth / 40, mTextPaint);
@@ -158,8 +156,11 @@ public class WaveLoadingView extends View {
         postInvalidateDelayed(10);
     }
 
-    public void setPercent(int percent){
+    public void setPercent(float percent){
         mPercent = percent;
+    }
+    public float getPercent(){
+        return mPercent;
     }
 
     public boolean getFirstLoading(){

@@ -9,9 +9,7 @@ import android.widget.TextView;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by Lenovo on 2017/2/16.
- */
+
 public final class ThemeChanger {
 
     Builder builder;

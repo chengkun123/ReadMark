@@ -10,6 +10,7 @@ public class MarkerBean implements Serializable{
     private String markerName;
     private String imageUrl;
     private float progress;
+    private String pages;
 
     public int getId() {
         return id;
@@ -41,5 +42,13 @@ public class MarkerBean implements Serializable{
 
     public void setProgress(float progress) {
         this.progress = progress;
+    }
+
+    public String getPages() {
+        return pages;
+    }
+
+    public void setPages(String pages) {
+        this.pages = pages;
     }
 }

@@ -157,7 +157,7 @@ public class BookDetailFragment extends Fragment implements SavingDialogFragment
     private void showDialog(){
         SavingDialogFragment dialogFragment = new SavingDialogFragment();
         dialogFragment.setOnPositiveClickListener(this);
-        dialogFragment.show(getFragmentManager(), "ss");
+        dialogFragment.show(getFragmentManager(), "saving");
     }
 
     @Override
@@ -170,8 +170,9 @@ public class BookDetailFragment extends Fragment implements SavingDialogFragment
         //Toast.makeText(getActivity(), "名字是"+book.getAlt_title(), Toast.LENGTH_SHORT).show();
         MarkerBean marker = new MarkerBean();
         marker.setImageUrl(book.getImages().getLarge());
-        marker.setProgress(0);
+        marker.setProgress(0f);
         marker.setMarkerName(book.getTitle());
+        marker.setPages(mBook.getPages());
 
         DatabaseTableSingleton.getDatabaseTable(getActivity()).saveMarkerInfo(marker);
     }

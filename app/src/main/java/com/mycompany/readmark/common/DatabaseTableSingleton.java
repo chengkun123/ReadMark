@@ -112,8 +112,11 @@ public class DatabaseTableSingleton {
         values.put("book_name", info.getMarkerName());
         values.put("book_image_url", info.getImageUrl());
         values.put("book_percent", info.getProgress());
+        values.put("book_pages", info.getPages());
         mDatabase.insert("BookMarker", null, values);
-        Log.e("进行了一次存入", "存入的名字是"+info.getMarkerName());
+        Log.e("进行了一次存入", "名字是" + info.getMarkerName());
+        Log.e("进行了一次存入", "percent是"+info.getProgress());
+        Log.e("进行了一次存入", "总页数是"+info.getPages());
     }
 
 
@@ -127,6 +130,7 @@ public class DatabaseTableSingleton {
                 bean.setMarkerName(cursor.getString(cursor.getColumnIndex("book_name")));
                 bean.setImageUrl(cursor.getString(cursor.getColumnIndex("book_image_url")));
                 bean.setProgress(cursor.getFloat(cursor.getColumnIndex("book_percent")));
+                bean.setPages(cursor.getString(cursor.getColumnIndex("book_pages")));
                 list.add(bean);
             }while (cursor.moveToNext());
         }
@@ -137,6 +141,14 @@ public class DatabaseTableSingleton {
         return list;
 
     }
+
+    public void updateMarkerPercent(float nowPercent, MarkerBean marker){
+        ContentValues values = new ContentValues();
+        values.put("book_percent", nowPercent);
+        mDatabase.update("BookMarker", values, "book_image_url=?"
+                , new String[]{marker.getImageUrl()});
+    }
+
 
     public void deleteMarker(String url){
         mDatabase.delete("BookMarker", "book_image_url = ?", new String[]{url});
@@ -157,6 +169,7 @@ public class DatabaseTableSingleton {
                 + "id integer primary key autoincrement,"
                 + "book_name text,"
                 + "book_image_url text,"
+                + "book_pages text,"
                 + "book_percent float)";
 
 

@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
             mMultiFloatingActionButton.setVisibility(View.VISIBLE);
             //mToolbar.setVisibility(View.VISIBLE);
         }
-        
+
     }
 
     private void initHelper(){
