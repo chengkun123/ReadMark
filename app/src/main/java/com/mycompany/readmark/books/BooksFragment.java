@@ -58,16 +58,18 @@ public class BooksFragment extends Fragment {
     private DatabaseTableSingleton mDatabaseTableSingleton;
     private RecyclerItemClickListener.OnItemClickListener mOnItemClickListener;
     private OnFabClickListener mOnFabClickListener;
-    private OnToolbarCompletedListener mOnToolbarCompletedListener;
+    private OnViewCompletedListener mOnViewCompletedListener;
 
     public interface OnFabClickListener{
         void onFabClick();
     }
 
-    public interface OnToolbarCompletedListener{
-        void onToolbarCompleted(Toolbar toolbar);
+    public interface OnViewCompletedListener{
+        void onViewCompleted(RecyclerView recyclerView);
     }
-
+    public void setOnViewCompletedListener(OnViewCompletedListener onViewCompletedListener){
+        mOnViewCompletedListener = onViewCompletedListener;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,8 +91,8 @@ public class BooksFragment extends Fragment {
         initRecyclerView(view);
         //initFab(view);
         initObserver();
-
-        //mOnToolbarCompletedListener.onToolbarCompleted(mToolbar);
+        setOnViewCompletedListener((OnViewCompletedListener) getActivity());
+        mOnViewCompletedListener.onViewCompleted(mRecyclerView);
         return view;
     }
 

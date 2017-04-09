@@ -2,6 +2,7 @@ package com.mycompany.readmark.customview.FloatingActionButton;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -49,7 +50,6 @@ public class TagFabLayout extends ViewGroup {
     public TagFabLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getAttributes(context, attrs);
-        //除了从布局加载FloatingActionButton，还要添加一个TagView
         settingTagView(context);
     }
 
@@ -70,8 +70,6 @@ public class TagFabLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int initWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int initHeight = MeasureSpec.getSize(heightMeasureSpec);
         int width = 0;
         int height = 0;
 
@@ -88,34 +86,22 @@ public class TagFabLayout extends ViewGroup {
 
         width += dp2px(8 + 8 + 8);
         height += dp2px(8 + 8);
-        setMeasuredDimension(width, height);
 
+        //直接将该ViewGroup设定为wrap_content的
+        setMeasuredDimension(width, height);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.e("OnMeasure中测得的结果是", getMeasuredWidth() + "*" + getMeasuredHeight());
-        //为TabLayout重新布局，因为在onMeasure中没有支持wrap_content
-        //而这个ViewGroup从效果上来说必须是wrap_content
-        /*int width = getChildAt(0).getMeasuredWidth()
-                + getChildAt(1).getMeasuredWidth() + dp2px(24 + 8 + 8);
-        int height = Math.max(getChildAt(0).getMeasuredHeight()
-                , getChildAt(1).getMeasuredHeight()) + dp2px(12);
-        LayoutParams params = getLayoutParams();
-        params.width = width;
-        params.height = height;
-        setLayoutParams(params);*/
-
         //为子View布局
         View tagView = getChildAt(0);
         View fabView = getChildAt(1);
 
         int tagWidth = tagView.getMeasuredWidth();
         int tagHeight = tagView.getMeasuredHeight();
-        Log.e("Tag的宽高",tagWidth+"*"+tagHeight);
+
         int fabWidth = fabView.getMeasuredWidth();
         int fabHeight = fabView.getMeasuredHeight();
-        Log.e("Tag旁边fab的宽高",fabWidth+"*"+fabHeight);
 
         int tl = dp2px(8);
         int tt = (getMeasuredHeight() - tagHeight) / 2;
@@ -152,6 +138,13 @@ public class TagFabLayout extends ViewGroup {
         });
     }
 
+    public void setBackgroundColor(int color){
+        mTagView.setBackgroundColor(color);
+    }
+
+    public void setTextColor(int color){
+        mTagView.setTextColor(color);
+    }
 
     private int dp2px(int value) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP

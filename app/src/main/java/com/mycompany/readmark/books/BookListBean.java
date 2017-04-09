@@ -1,6 +1,7 @@
 package com.mycompany.readmark.books;
 
 import android.os.HandlerThread;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.List;

@@ -24,6 +24,7 @@
         <enum name="left_bottom" value="0"/>
         <enum name="right_bottom" value="1"/>
     </attr>
+
     <declare-styleable name="MultiFloatingActionButton">
         <attr name="backgroundColor" format="color"/>
         <attr name="switchFabIcon" format="reference"/>

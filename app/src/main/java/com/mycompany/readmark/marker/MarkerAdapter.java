@@ -21,7 +21,15 @@ public class MarkerAdapter extends RecyclerView.Adapter<MarkerAdapter.MyViewHold
     private List<MarkerBean> mDates;
     private Context mContext;
     private OnMarkerClickListener mOnImageClickListener;
+    private OnMarkerLongClickListener mOnMarkerLongClickListener;
 
+    public interface OnMarkerLongClickListener{
+        void onMarkerLongClick(MarkerBean bean);
+    }
+
+    public void setOnMarkerLongClickListener(OnMarkerLongClickListener onMarkerLongClickListener){
+        mOnMarkerLongClickListener = onMarkerLongClickListener;
+    }
 
     public interface OnMarkerClickListener{
         void onMarkerClick(MarkerBean bean);
@@ -29,7 +37,6 @@ public class MarkerAdapter extends RecyclerView.Adapter<MarkerAdapter.MyViewHold
 
     public void setOnMarkerClickListener(OnMarkerClickListener onImageClickListener){
         mOnImageClickListener = onImageClickListener;
-
     }
 
 
@@ -53,13 +60,19 @@ public class MarkerAdapter extends RecyclerView.Adapter<MarkerAdapter.MyViewHold
                 .into(holder.image);
         holder.text.setText(mDates.get(position).getMarkerName());
 
-        holder.image.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnImageClickListener.onMarkerClick(mDates.get(position));
             }
         });
-
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mOnMarkerLongClickListener.onMarkerLongClick(mDates.get(position));
+                return true;
+            }
+        });
     }
 
     @Override

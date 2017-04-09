@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.common.DatabaseTableSingleton;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Created by Lenovo on 2017/3/14.
@@ -14,11 +17,12 @@ import com.mycompany.readmark.common.DatabaseTableSingleton;
 public class MarkerActivity extends AppCompatActivity implements MarkerAdapter.OnMarkerClickListener{
     private MarkersFragment mMarkersFragment;
     private android.support.v4.app.FragmentManager mFragmentManager;
-
+    private ThemeChangeHelper mThemeChangeHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTheme();
         setContentView(R.layout.activity_marker);
         mFragmentManager = getSupportFragmentManager();
         mFragmentManager.addOnBackStackChangedListener(new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
@@ -42,6 +46,15 @@ public class MarkerActivity extends AppCompatActivity implements MarkerAdapter.O
 
     }
 
+    private void initTheme(){
+        mThemeChangeHelper = new ThemeChangeHelper(this);
+        if (mThemeChangeHelper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
+    }
+
     @Override
     public void onMarkerClick(MarkerBean bean) {
         ProgressFragment fragment = new ProgressFragment();
@@ -56,6 +69,7 @@ public class MarkerActivity extends AppCompatActivity implements MarkerAdapter.O
                 .addToBackStack("marker")
                 .add(R.id.marker_content, fragment)
                 .commit();
-
     }
+
+
 }

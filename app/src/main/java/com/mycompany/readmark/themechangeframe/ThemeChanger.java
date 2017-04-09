@@ -38,9 +38,7 @@ public final class ThemeChanger {
         }
 
         public Builder addSchemedBgColorSetter(int viewId, int attrId){
-            Log.e("添加了一个需要设置背景的View", "......");
             View view = findViewById(viewId);
-            Log.e("找到了需要的View", (view != null) + "");
             ViewBgColorSetter vs = new ViewBgColorSetter(view, attrId);
             mSetters.add(vs);
             return this;

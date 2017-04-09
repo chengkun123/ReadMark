@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/search_layout"
+        android:background="?attr/myBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -9,14 +11,12 @@
         layout="@layout/toolbar_layout" />
 
     <com.mycompany.readmark.search.FlowLayout
-
         android:id="@+id/flow_layout"
         android:padding="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#333333">
+        android:layout_height="wrap_content">
 
     </com.mycompany.readmark.search.FlowLayout>
 
 
-    </LinearLayout>
+</LinearLayout>

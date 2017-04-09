@@ -16,7 +16,6 @@ import android.widget.TextView;
 public class TagView extends CardView {
     private TextView mTextView;
 
-    //不需要用到（自定义）属性
     public TagView(Context context) {
         this(context, null);
     }
@@ -30,8 +29,8 @@ public class TagView extends CardView {
         mTextView = new TextView(context);
         mTextView.setSingleLine(true);
     }
-
-    protected void setTextView(float size){
+    
+    protected void setTextSize(float size){
         mTextView.setTextSize(size);
     }
 
@@ -39,7 +38,7 @@ public class TagView extends CardView {
         mTextView.setTextColor(color);
     }
 
-    //在这个方法中进行在CardView中添加TextView的工作
+    
     protected void setTagText(String text){
         mTextView.setText(text);
         addTag();

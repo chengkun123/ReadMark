@@ -19,6 +19,7 @@
             android:layout_height="?attr/actionBarSize">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/main_toolbar"
+                android:titleTextColor="?attr/myTextColor"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
@@ -50,6 +51,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/menu_navigation" />
+        />
 
 </android.support.v4.widget.DrawerLayout>

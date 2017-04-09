@@ -18,10 +18,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.common.DatabaseTableSingleton;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,51 +36,44 @@ import rx.functions.Action1;
 /**
  * Created by Lenovo on 2016/11/20.
  */
-public class SearchActivity extends AppCompatActivity{
+public class SearchActivity extends AppCompatActivity implements FlowLayout.OnTagClickListener{
 
     private static String SEARCH_KEYWORD = "search_keyword";
     private static int RESULT_CODE = 2;
     private Toolbar mToolbar;
     private SearchView mSearchView;
-    //private RecyclerView mRecyclerView;
-    //private LinearLayoutManager mLinearLayoutManager;
-    //private SearchAdapter mSearchAdapter;
     private FlowLayout mFlowLayout;
     private List<String> mDatas = new ArrayList<>();
     private TagAdapter<String> mStringTagAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeChangeHelper helper = new ThemeChangeHelper(this);
+        if (helper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
         setContentView(R.layout.activity_search);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
         mFlowLayout = (FlowLayout) findViewById(R.id.flow_layout);
-        //mFlowLayout.setOnTagClickListener(this);
-        //mFlowLayout.setOnTagLongClickListener(this);
-        for(int i=0; i<10; i++){
-            mDatas.add(i+"");
-        }
+        mDatas.add("二手时间");
+        mDatas.add("极简宇宙史");
+        mDatas.add("无人生还");
+        mDatas.add("灯塔");
+        mDatas.add("活着为了讲述");
+        mDatas.add("造房子");
+        mDatas.add("北鸢");
+        mDatas.add("斯通纳");
+        mDatas.add("我可以咬一口吗");
+        mDatas.add("我脑袋里的怪东西");
 
         mStringTagAdapter = new TagAdapter<>(this, mDatas);
         mFlowLayout.setAdapter(mStringTagAdapter);
-        //notify中才会进行View的重置
+        mFlowLayout.setOnTagClickListener(this);
         mStringTagAdapter.notifyDataSetChanged();
-
-
-
-        //initSearchedInfo(this);
-
-        //mRecyclerView = (RecyclerView)findViewById(R.id.search_recyclerview);
-
-        //mLinearLayoutManager = new LinearLayoutManager(this);
-        //mRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-        //mSearchAdapter = new SearchAdapter(this);
-        //mRecyclerView.setAdapter(mSearchAdapter);
-        //mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
     }
 
     public void onResume(){
@@ -89,8 +84,6 @@ public class SearchActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
-
-
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -108,9 +101,6 @@ public class SearchActivity extends AppCompatActivity{
                 Intent intent = new Intent();
                 intent.putExtra(SEARCH_KEYWORD, query);
                 setResult(RESULT_CODE, intent);
-                //SearchedInfoBean searchedInfoBean = new SearchedInfoBean();
-                //searchedInfoBean.setKeyWord(query);
-                //saveInfo(searchedInfoBean);
                 finish();
                 return false;
             }
@@ -121,6 +111,12 @@ public class SearchActivity extends AppCompatActivity{
             }
         });
         return true;
+    }
+
+    @Override
+    public void onTagClick(String input) {
+        Log.e("回调了",input);
+        mSearchView.setQuery(input, false);
     }
 
     @Override
@@ -175,38 +171,6 @@ public class SearchActivity extends AppCompatActivity{
                 break;
             }
         }
-
-
-        /*LayoutInflater inflater = LayoutInflater.from(this);
-        for (int i=0; i<10; i++){
-            if(!list.isEmpty() && list.size()-1-i >= 0){
-                TextView textView = (TextView) inflater.inflate(R.layout.textview_tag, mFlowLayout, false);
-                String temp = list.get(list.size()-1-i).getKeyWord();
-                textView.setText(temp);
-                mFlowLayout.addView(textView);
-            }else{
-                break;
-            }
-        }*/
     }
 
-    /*public void onTagClick(){
-        if(mStringTagAdapter.isDeleteShowed()){
-            mStringTagAdapter.setIsDeleteShowed(false);
-            mStringTagAdapter.notifyDataSetChanged();
-        }else{
-            mStringTagAdapter.setIsDeleteShowed(true);
-            mStringTagAdapter.notifyDataSetChanged();
-        }
-    }*/
-
-    /*public void onTagLongClick(){
-        if(mStringTagAdapter.isDeleteShowed()){
-            mStringTagAdapter.setIsDeleteShowed(false);
-            mStringTagAdapter.notifyDataSetChanged();
-        }else{
-            mStringTagAdapter.setIsDeleteShowed(true);
-            mStringTagAdapter.notifyDataSetChanged();
-        }
-    }*/
 }

@@ -22,12 +22,14 @@ import java.util.List;
 /**
  * Created by Lenovo on 2017/3/18.
  */
-public class MarkersFragment extends Fragment{
+public class MarkersFragment extends Fragment implements MarkerAdapter.OnMarkerLongClickListener, MarkerDeleteDialogFragment.OnPositiveClickListener{
     private RecyclerView mRecyclerView;
     private MarkerAdapter mMarkerAdapter;
     private List<MarkerBean> mDates;
     private DatabaseTableSingleton mDatabaseTableSingleton;
     private Button mButton;
+    private MarkerBean mMarkerToDelete;
+
 
     @Nullable
     @Override
@@ -36,7 +38,7 @@ public class MarkersFragment extends Fragment{
         mRecyclerView = (RecyclerView) view.findViewById(R.id.marker_recyclerview);
         mRecyclerView.setLayoutManager(
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mButton = (Button) view.findViewById(R.id.button_test);
+       /* mButton = (Button) view.findViewById(R.id.button_test);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,12 +51,13 @@ public class MarkersFragment extends Fragment{
                 }
                 //
             }
-        });
+        });*/
         mDatabaseTableSingleton = DatabaseTableSingleton.getDatabaseTable(getActivity());
         mDates = new ArrayList<>();
         mDates = mDatabaseTableSingleton.loadMarkerInfo();
 
         mMarkerAdapter = new MarkerAdapter(mDates, getActivity());
+        mMarkerAdapter.setOnMarkerLongClickListener(this);
         mMarkerAdapter.setOnMarkerClickListener((MarkerAdapter.OnMarkerClickListener)getActivity());
         mRecyclerView.setAdapter(mMarkerAdapter);
         return view;
@@ -66,9 +69,32 @@ public class MarkersFragment extends Fragment{
 
     }
 
+    @Override
+    public void onMarkerLongClick(MarkerBean bean) {
+        mMarkerToDelete = bean;
+        showDialog();
+    }
+
+    private void showDialog(){
+        MarkerDeleteDialogFragment dialogFragment = new MarkerDeleteDialogFragment();
+        dialogFragment.setOnPositiveClickListener(this);
+        dialogFragment.show(getFragmentManager(), "delete");
+    }
 
     public void onPercentChanged() {
         mDates = mDatabaseTableSingleton.loadMarkerInfo();
         mMarkerAdapter.upDateMarkers(mDates);
     }
+
+    @Override
+    public void onPositiveClick() {
+        deleteMarker(mMarkerToDelete);
+    }
+
+    private void deleteMarker(MarkerBean bean){
+        mDatabaseTableSingleton.deleteMarker(bean.getImageUrl());
+        mDates = mDatabaseTableSingleton.loadMarkerInfo();
+        mMarkerAdapter.upDateMarkers(mDates);
+    }
+
 }

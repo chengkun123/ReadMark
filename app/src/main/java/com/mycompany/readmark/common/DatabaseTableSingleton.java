@@ -152,7 +152,6 @@ public class DatabaseTableSingleton {
 
     public void deleteMarker(String url){
         mDatabase.delete("BookMarker", "book_image_url = ?", new String[]{url});
-
     }
 
 

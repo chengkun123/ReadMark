@@ -78,16 +78,6 @@ public class TagAdapter<T> extends BaseAdapter implements FlowLayout.OnTagMovedL
         this.isDeleteShowed = isDeleteShowed;
     }
 
-    public void onTagClick(){
-
-    }
-
-    /*public void onTagLongClick(boolean isDeleteShowed){
-        if(isDeleteShowed){
-            notifyDataSetChanged();
-        }
-    }*/
-
     public void onTagMoved(int fromPos, int toPos, boolean isMoving){
         T t = mDataList.get(fromPos);
         mDataList.remove(fromPos);

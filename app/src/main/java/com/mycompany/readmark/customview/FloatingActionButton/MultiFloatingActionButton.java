@@ -7,11 +7,13 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
@@ -73,6 +75,8 @@ public class MultiFloatingActionButton extends ViewGroup {
 
     private void getAttributes(Context context, AttributeSet attrs){
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiFloatingActionButton);
+
+
         mBackgroundColor = typedArray.getColor(
                 R.styleable.MultiFloatingActionButton_backgroundColor, Color.TRANSPARENT);
         mFabIcon = typedArray.getDrawable(R.styleable.MultiFloatingActionButton_switchFabIcon);
@@ -112,35 +116,57 @@ public class MultiFloatingActionButton extends ViewGroup {
             //布局背景和主Fab
             layoutFloatingActionButton();
             layoutBackgroundView();
-
+            layoutItems();
             Log.e("最外层View的宽高是", getMeasuredWidth() + "*" + getMeasuredHeight());
 
-            int count = getChildCount();
-            for(int i=2; i<count; i++){
-                TagFabLayout child = (TagFabLayout) getChildAt(i);
-                child.setVisibility(INVISIBLE);
+        }
+    }
 
-                int width = child.getMeasuredWidth();
-                int height = child.getMeasuredHeight();
-                Log.e("子View的宽高是",width+"*"+height);
-
-                int fabHeight = mFloatingActionButton.getMeasuredHeight();
-
-                int cl = 0;
-                int ct = 0;
-
-                switch (mPosition){
-                    case POS_LEFT_BOTTOM:
-                    case POS_RIGHT_BOTTOM:
-                        cl = getMeasuredWidth() - width - dp2px(8);
-                        ct = getMeasuredHeight() - fabHeight - (i-1) * height - dp2px(8);
-                }
-                Log.e("子View的坐标是",cl+"+"+ct);
-                child.layout(cl, ct, cl + width, ct + height);
-                bindMenuEvents(child, i);
-                prepareAnim(child);
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean intercepted = false;
+        int x = (int)ev.getX();
+        int y = (int)ev.getY();
+        if(isMenuOpen){
+            switch (ev.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    if(judgeIfTouchBackground(x, y)){
+                        intercepted = true;
+                    }
+                    intercepted = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    intercepted = false;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    intercepted = false;
+                    break;
             }
         }
+        return intercepted;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(isMenuOpen){
+            closeMenu();
+            changeBackground();
+            rotateFloatingButton();
+            changeStatus();
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private boolean judgeIfTouchBackground(int x, int y){
+        Rect a = new Rect();
+        Rect b = new Rect();
+        a.set(0, 0, getWidth(), getHeight() - getChildAt(getChildCount() - 1).getTop());
+        b.set(0, getChildAt(getChildCount() - 1).getTop(), getChildAt(getChildCount() - 1).getLeft(), getHeight());
+        if(a.contains(x, y) || b.contains(x, y)){
+            return true;
+        }
+        return false;
     }
 
 
@@ -172,8 +198,36 @@ public class MultiFloatingActionButton extends ViewGroup {
     private void layoutBackgroundView(){
         mBackgroundView.layout(0, 0
                 , getMeasuredWidth(), getMeasuredHeight());
+        //bindBackgroundEvent();
     }
 
+    private void layoutItems(){
+        int count = getChildCount();
+        for(int i=2; i<count; i++) {
+            TagFabLayout child = (TagFabLayout) getChildAt(i);
+            child.setVisibility(INVISIBLE);
+
+            int width = child.getMeasuredWidth();
+            int height = child.getMeasuredHeight();
+            Log.e("子View的宽高是", width + "*" + height);
+
+            int fabHeight = mFloatingActionButton.getMeasuredHeight();
+
+            int cl = 0;
+            int ct = 0;
+
+            switch (mPosition) {
+                case POS_LEFT_BOTTOM:
+                case POS_RIGHT_BOTTOM:
+                    cl = getMeasuredWidth() - width - dp2px(8);
+                    ct = getMeasuredHeight() - fabHeight - (i - 1) * height - dp2px(8);
+            }
+            Log.e("子View的坐标是", cl + "+" + ct);
+            child.layout(cl, ct, cl + width, ct + height);
+            bindMenuEvents(child, i);
+            prepareAnim(child);
+        }
+    }
 
     private void bindFloatingEvent(){
         mFloatingActionButton.setOnClickListener(new OnClickListener() {
@@ -212,7 +266,7 @@ public class MultiFloatingActionButton extends ViewGroup {
                 changeBackground();
                 changeStatus();
                 closeMenu();
-                if (mOnFabItemClickListener != null){
+                if (mOnFabItemClickListener != null) {
                     mOnFabItemClickListener.onFabItemClick(child, pos);
                 }
             }
@@ -227,6 +281,7 @@ public class MultiFloatingActionButton extends ViewGroup {
             case ANIM_SCALE:
                 child.setScaleX(0f);
                 child.setScaleY(0f);
+                break;
         }
     }
 
@@ -256,17 +311,13 @@ public class MultiFloatingActionButton extends ViewGroup {
     }
 
     private void openMenu(){
-
         switch (mAnimationMode){
             case ANIM_BOUNCE:
                 bounceToShow();
                 break;
             case ANIM_SCALE:
                 scaleToShow();
-
-
         }
-
     }
 
     private void bounceToShow(){
@@ -330,14 +381,45 @@ public class MultiFloatingActionButton extends ViewGroup {
             alpha.start();
         }
     }
-    /*@Override
-    public LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new MarginLayoutParams(getContext(), attrs);
-    }*/
 
     private int dp2px(int value) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP
                 , value, getResources().getDisplayMetrics());
 
+    }
+
+    public void setAnimationDuration(int duration){
+        mAnimationDuration = duration;
+    }
+
+    public void setFabColor(ColorStateList color){
+        mFloatingActionButton.setBackgroundTintList(color);
+    }
+
+    public void setTagBackgroundColor(int color){
+        for(int i=2; i<getChildCount(); i++){
+            TagFabLayout tagFabLayout = (TagFabLayout) getChildAt(i);
+            tagFabLayout.setBackgroundColor(color);
+        }
+    }
+
+    public void setTextColor(int color){
+        for(int i=2; i<getChildCount(); i++){
+            TagFabLayout tagFabLayout = (TagFabLayout) getChildAt(i);
+            tagFabLayout.setTextColor(color);
+        }
+    }
+
+    public void setBackgroundColor(int color){
+        mBackgroundColor = color;
+        mBackgroundView.setBackgroundColor(color);
+    }
+
+    public void setFabIcon(Drawable icon){
+        mFloatingActionButton.setImageDrawable(icon);
+    }
+
+    public boolean getButtonState(){
+        return isMenuOpen;
     }
 }

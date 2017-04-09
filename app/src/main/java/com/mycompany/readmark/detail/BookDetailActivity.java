@@ -7,16 +7,19 @@ import android.view.MenuItem;
 
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.books.BooksBean;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 
 /**
  * Created by Lenovo on 2017/3/14.
  */
 public class BookDetailActivity extends AppCompatActivity{
     private BookDetailFragment mBookDetailFragment;
+    private ThemeChangeHelper mThemeChangeHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTheme();
         setContentView(R.layout.activity_detail);
 
         BooksBean book = (BooksBean) getIntent().getSerializableExtra("book");
@@ -29,6 +32,15 @@ public class BookDetailActivity extends AppCompatActivity{
 
     }
 
+    private void initTheme(){
+        mThemeChangeHelper = new ThemeChangeHelper(this);
+        if (mThemeChangeHelper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

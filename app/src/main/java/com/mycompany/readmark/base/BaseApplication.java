@@ -1,5 +1,6 @@
 package com.mycompany.readmark.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;

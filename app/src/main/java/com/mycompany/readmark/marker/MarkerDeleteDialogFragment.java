@@ -13,14 +13,14 @@ import android.widget.EditText;
 import com.mycompany.readmark.R;
 
 /**
- * Created by Lenovo on 2017/3/22.
+ * Created by Lenovo on 2017/4/8.
  */
-public class PercentSavingDialogFragment extends DialogFragment {
+public class MarkerDeleteDialogFragment extends DialogFragment {
     private OnPositiveClickListener mOnPositiveClickListener;
 
 
     public interface OnPositiveClickListener{
-        void onPositiveClick(String text);
+        void onPositiveClick();
     }
 
     public void setOnPositiveClickListener(OnPositiveClickListener onPositiveClickListener){
@@ -31,19 +31,16 @@ public class PercentSavingDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_saving_percent, null);
-        final EditText editText = (EditText) view.findViewById(R.id.edit_text);
-
+        View view = inflater.inflate(R.layout.fragment_delete_marker, null);
         builder.setView(view)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mOnPositiveClickListener.onPositiveClick(editText.getText().toString());
+                        mOnPositiveClickListener.onPositiveClick();
                     }
                 })
                 .setNegativeButton("取消", null);
         return builder.create();
 
     }
-
 }

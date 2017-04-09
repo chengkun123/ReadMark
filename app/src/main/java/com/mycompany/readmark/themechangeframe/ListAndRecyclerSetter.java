@@ -40,6 +40,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
 
     @Override
     public void setValue(Resources.Theme theme, int themeId) {
+        //clearCachePool(mTargetView);
         changeChildrenAttrs((ViewGroup) mTargetView, theme, themeId);
         clearCachePool(mTargetView);
     }
@@ -83,6 +84,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
             }
         }else if(rootView instanceof RecyclerView){
             try {
+                Log.e("的确清理了缓存View", "ss");
                 Field field = RecyclerView.class.getDeclaredField("mRecycler");
                 field.setAccessible(true);
 

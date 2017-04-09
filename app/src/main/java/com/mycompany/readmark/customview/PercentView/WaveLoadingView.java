@@ -63,6 +63,9 @@ public class WaveLoadingView extends View {
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+        /*
+        * 对wrap_content的支持
+        * */
         int widthInWrapContent = dp2px(100);
         int heightInWrapContent = dp2px(100);
 
@@ -141,7 +144,7 @@ public class WaveLoadingView extends View {
         canvas.drawBitmap(mBitmap, 0, 0, null);
 
         //画百分比
-        String str = mPercent*100+"";
+        String str = ((int)(mPercent*100))+"";
         mTextPaint.setTextSize(mWidth / 8);
         float txtLength = mTextPaint.measureText(str);
         canvas.drawText(str, mWidth / 2 - txtLength / 2, mWidth / 2 + mWidth / 40, mTextPaint);
