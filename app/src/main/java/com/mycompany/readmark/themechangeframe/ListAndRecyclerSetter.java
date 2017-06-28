@@ -66,7 +66,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
                         .getDeclaredField("mRecycler");
                 field.setAccessible(true);
                 Method method = Class
-                        .forName("android.widget.AbslistView$RecycleBin")
+                        .forName("android.widget.AbsListView$RecycleBin")
                         .getDeclaredMethod("clear", new Class[0]);
                 method.setAccessible(true);
                 method.invoke(field.get(rootView), new Object[0]);
@@ -84,7 +84,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
             }
         }else if(rootView instanceof RecyclerView){
             try {
-                Log.e("的确清理了缓存View", "ss");
+
                 Field field = RecyclerView.class.getDeclaredField("mRecycler");
                 field.setAccessible(true);
 

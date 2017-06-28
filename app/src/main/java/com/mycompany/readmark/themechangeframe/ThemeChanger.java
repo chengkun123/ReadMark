@@ -37,6 +37,9 @@ public final class ThemeChanger {
             return mActivity.findViewById(viewId);
         }
 
+        /*
+        * 添加一个设置BG的Setter
+        * */
         public Builder addSchemedBgColorSetter(int viewId, int attrId){
             View view = findViewById(viewId);
             ViewBgColorSetter vs = new ViewBgColorSetter(view, attrId);
@@ -44,11 +47,16 @@ public final class ThemeChanger {
             return this;
         }
 
+        /*
+        * 添加一个设置TextColor的Setter
+        * */
         public Builder addSchemedTextColorSetter(int viewId, int attrId){
             mSetters.add(new ViewTextColorSetter((TextView)findViewById(viewId), attrId));
             return this;
         }
-
+        /*
+        * 添加一个设置setter
+        * */
         public Builder addSchemedSetter(ViewSetter setter){
             mSetters.add(setter);
             return this;
@@ -60,10 +68,13 @@ public final class ThemeChanger {
             makeChange(themeId);
         }
 
+        /*
+        * 遍历所有Setter并调用其setValue方法进行属性的改变
+        *
+        * */
         private void makeChange(int themeId){
             Resources.Theme curTheme = mActivity.getTheme();
             for(ViewSetter setter : mSetters){
-                Log.e("进行了一次View的设置", "....");
                 setter.setValue(curTheme, themeId);
             }
         }

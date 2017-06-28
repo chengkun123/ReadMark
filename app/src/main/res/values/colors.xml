@@ -11,4 +11,41 @@
     <color name="color3F3F3F">#3F3F3F</color>
     <color name="color8A9599">#8A9599</color>
     <color name="color868686">#868686</color>
+
+
+
+    <!--theme color-->
+    <color name="colorPrimaryDarkNight">#000000</color>
+    <color name="colorPrimaryLight">#C8E6C9</color>
+    <color name="primary_text_dark">#deffffff</color>
+    <color name="search_icon_color">#be000000</color>
+
+    <!--navigation header-->
+    <color name="startColor">#81C784</color>
+    <color name="centerColor">#4CAF50</color>
+    <color name="endColor">#2E7D32</color>
+
+    <!--camera color-->
+    <color name="viewfinder_mask">#55000000</color>
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="book_title_mask">#80000000</color>
+    <color name="bookshelf_tag_mask">#66ffffff</color>
+
+    <!--swipeRefreshLayout color-->
+    <color name="recycler_color1">#bc9191</color>
+    <color name="recycler_color2">#edd36a</color>
+    <color name="recycler_color3">#82c1f9</color>
+    <color name="recycler_color4">#68d661</color>
+
+    <color name="publish_info_bg">#6ececece</color>
+    <color name="dividers">#1f000000</color>
+    <color name="grass_green">#46C01C</color>
+    <color name="tag_layout_bg">#def2f2f2</color>
+    <color name="white_alpha">#aaFFFFFF</color>
+
+    <!--common color-->
+    <color name="white">#FFFFFF</color>
+    <color name="green">#008000</color>
+
 </resources>

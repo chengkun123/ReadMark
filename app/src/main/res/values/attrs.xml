@@ -2,10 +2,17 @@
 <resources>
     <attr name="border_color" format="reference|color"/>
     <attr name="border_width" format="dimension"/>
+    <declare-styleable name="MaterialHome">
+        <attr name="publishInfoBackground" format="reference|color" />
+        <attr name="searchIconColor" format="reference|color" />
+        <attr name="discoverSearchBg" format="reference|color" />
+    </declare-styleable>
 
+
+
+    <!--换肤颜色-->
     <attr name="myBackground" format="color"/>
     <attr name="myTextColor" format="color"/>
-
 
 
 

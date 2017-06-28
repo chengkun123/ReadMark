@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/group_one"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:title="home"
+            android:icon="@mipmap/ic_dashboard_white_24dp"
+            />
+        <item
+            android:id="@+id/nav_bookshelf"
+            android:title="shelf"
+            android:icon="@mipmap/ic_import_contacts_white_24dp"
+            />
+    </group>
+
+    <item android:title="function">
+        <menu>
+            <item
+                android:id="@+id/nav_theme"
+                android:title="theme"
+                android:icon="@mipmap/ic_color_lens_white_24dp"
+                app:actionLayout="@layout/nav_theme_switch"
+                />
+        </menu>
+    </item>
+
+</menu>

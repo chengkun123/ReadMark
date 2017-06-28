@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="main_tab_type">
+        <item>高分</item>
+        <item>热门</item>
+        <item>新书</item>
+        <item>经典</item>
+    </string-array>
+</resources>
