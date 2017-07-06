@@ -17,14 +17,12 @@ public interface IBookshelfModel {
     void loadBookshelf(ApiCompleteListener listener);
 
     /**
-     * 添加一个书架
+     * 添加一个条目
      *
-     * @param title    书架名称
-     * @param remark   备注
-     * @param createAt 创建时间
+     * @param bookshelf
      * @param listener 回调
      */
-    void addBookshelf(String title, String remark, String createAt, ApiCompleteListener listener);
+    void addBookshelf(Bookshelf bookshelf, ApiCompleteListener listener);
 
     /**
      * 修改一个书架

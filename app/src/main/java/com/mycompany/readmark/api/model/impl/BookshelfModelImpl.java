@@ -2,7 +2,6 @@ package com.mycompany.readmark.api.model.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 import com.mycompany.readmark.api.ApiCompleteListener;
 import com.mycompany.readmark.api.commen.DatabaseHelper;
@@ -39,10 +38,9 @@ public class BookshelfModelImpl implements IBookshelfModel{
      */
     @Override
     public void loadBookshelf(final ApiCompleteListener listener) {
-        Log.e("执行了", "从数据库加载");
         if(db != null){
             final Observable<SqlBrite.Query> bookshelf = db
-                    .createQuery("bookshelf", "SELECT * FROM bookshelf order by orders DESC");
+                    .createQuery("bookshelf", "SELECT * FROM bookshelf order by id DESC");
             subscribe = bookshelf.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<SqlBrite.Query>() {
@@ -56,11 +54,20 @@ public class BookshelfModelImpl implements IBookshelfModel{
                             while(cursor.moveToNext()){
                                 Bookshelf bookshelfBean = new Bookshelf();
                                 bookshelfBean.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                                bookshelfBean.setBookCount(cursor.getInt(cursor.getColumnIndex("bookCount")));
                                 bookshelfBean.setTitle(cursor.getString(cursor.getColumnIndex("title")));
                                 bookshelfBean.setRemark(cursor.getString(cursor.getColumnIndex("remark")));
-                                bookshelfBean.setOrder(cursor.getInt(cursor.getColumnIndex("orders")));
                                 bookshelfBean.setCreateTime(cursor.getString(cursor.getColumnIndex("create_at")));
+                                bookshelfBean.setColor(cursor.getInt(cursor.getColumnIndex("color")));
+                                bookshelfBean.setFinished(cursor.getInt(cursor.getColumnIndex("finished")));
+                                bookshelfBean.setProgress(cursor.getFloat(cursor.getColumnIndex("progress")));
+                                bookshelfBean.setWaveratio(cursor.getFloat(cursor.getColumnIndex("waveratio")));
+                                bookshelfBean.setAmpratio(cursor.getFloat(cursor.getColumnIndex("ampratio")));
+                                bookshelfBean.setTotalpage(cursor.getInt(cursor.getColumnIndex("totalpage")));
+                                bookshelfBean.setCurrentpage(cursor.getInt(cursor.getColumnIndex("currentpage")));
+                                bookshelfBean.setRed(cursor.getInt(cursor.getColumnIndex("red")));
+                                bookshelfBean.setGreen(cursor.getInt(cursor.getColumnIndex("green")));
+                                bookshelfBean.setBlue(cursor.getInt(cursor.getColumnIndex("blue")));
+
                                 bookshelfs.add(bookshelfBean);
                             }
                             listener.onCompleted(bookshelfs);
@@ -75,21 +82,30 @@ public class BookshelfModelImpl implements IBookshelfModel{
 
     /**
      * 添加一个条目
-     * @param title    书架名称
-     * @param remark   备注
-     * @param createAt 创建时间
+     * @param bookshelf
      * @param listener 回调
      */
     @Override
-    public void addBookshelf(String title, String remark, String createAt, ApiCompleteListener listener) {
+    public void addBookshelf(Bookshelf bookshelf, ApiCompleteListener listener) {
         if (db != null) {
-            Log.e("执行到了", "插入数据");
+            //Log.e("执行到了", "插入数据");
             ContentValues values = new ContentValues();
-            values.put("title", title);
-            values.put("remark", remark);
-            values.put("create_at", createAt);
-            values.put("orders", System.currentTimeMillis());
+            values.put("title", bookshelf.getTitle());
+            values.put("remark", bookshelf.getRemark());
+            values.put("create_at", bookshelf.getCreateTime());
+            values.put("color", bookshelf.getColor());
+            values.put("finished", bookshelf.getFinished());
+            values.put("progress", bookshelf.getProgress());
+            values.put("waveratio", bookshelf.getWaveratio());
+            values.put("ampratio", bookshelf.getAmpratio());
+            values.put("totalpage", bookshelf.getTotalpage());
+            values.put("currentpage", bookshelf.getCurrentpage());
+            values.put("red", bookshelf.getRed());
+            values.put("green", bookshelf.getGreen());
+            values.put("blue", bookshelf.getBlue());
+
             db.insert("bookshelf", values);
+
             listener.onCompleted("添加成功");
         } else {
             listener.onFailed(new BaseResponse(500, "db error : add"));
@@ -107,7 +123,19 @@ public class BookshelfModelImpl implements IBookshelfModel{
             ContentValues values = new ContentValues();
             values.put("title", bookshelf.getTitle());
             values.put("remark", bookshelf.getRemark());
+            values.put("create_at", bookshelf.getCreateTime());
+            values.put("color", bookshelf.getColor());
+            values.put("finished", bookshelf.getFinished());
+            values.put("progress", bookshelf.getProgress());
+            values.put("waveratio", bookshelf.getWaveratio());
+            values.put("ampratio", bookshelf.getAmpratio());
+            values.put("totalpage", bookshelf.getTotalpage());
+            values.put("currentpage", bookshelf.getCurrentpage());
+            values.put("red", bookshelf.getRed());
+            values.put("green", bookshelf.getGreen());
+            values.put("blue", bookshelf.getBlue());
             db.update("bookshelf", values, "id=?", bookshelf.getId() + "");
+            //listener.onCompleted("更新成功");
         } else {
             listener.onFailed(new BaseResponse(500, "db error : update"));
         }

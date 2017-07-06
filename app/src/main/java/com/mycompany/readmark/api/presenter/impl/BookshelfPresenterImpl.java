@@ -4,7 +4,6 @@ import com.mycompany.readmark.api.ApiCompleteListener;
 import com.mycompany.readmark.api.model.IBookshelfModel;
 import com.mycompany.readmark.api.model.impl.BookshelfModelImpl;
 import com.mycompany.readmark.api.presenter.IBookshelfPresenter;
-import com.mycompany.readmark.api.view.IBookDetailView;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.http.BaseResponse;
 import com.mycompany.readmark.bean.table.Bookshelf;
@@ -35,14 +34,12 @@ public class BookshelfPresenterImpl implements IBookshelfPresenter, ApiCompleteL
 
     /**
      * 添加一本书到数据库
-     * @param title    书架名称
-     * @param remark   备注
-     * @param createAt 创建时间
+     * @param bookshelf
      */
     @Override
-    public void addBookshelf(String title, String remark, String createAt) {
+    public void addBookshelf(Bookshelf bookshelf) {
         mBookListView.showProgress();
-        mBookshelfModel.addBookshelf(title, remark, createAt, this);
+        mBookshelfModel.addBookshelf(bookshelf, this);
     }
 
     /**

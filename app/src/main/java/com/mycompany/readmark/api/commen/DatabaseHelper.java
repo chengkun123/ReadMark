@@ -31,13 +31,21 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table if not exists bookshelf("
-                + "id integer primary key,"
-                + "bookCount integer,"
-                + "title varchar not null,"
-                + "remark varchar,"
-                + "orders integer,"
-                + "create_at varchar not null)");
+        db.execSQL("create table if not exists bookshelf(" +
+                "id integer primary key," +
+                "title varchar not null," + //标题
+                "remark varchar," + //备注
+                "create_at varchar not null," + //创建日期
+                "color integer," + //颜色
+                "finished integer," + //是否完成
+                "progress real," + //进度
+                "waveratio real," + //水波占比
+                "ampratio real," +  //振幅比
+                "totalpage integer," +  //总页数
+                "currentpage integer," +   //当前已读
+                "red integer," +  //红
+                "green integer," +   //绿
+                "blue integer)");  //蓝
     }
 
     @Override

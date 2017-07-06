@@ -62,5 +62,7 @@ dependencies {
 
     compile 'me.codeboy.android:align-text-view:2.3.0'
     compile 'com.flyco.labelview:FlycoLabelView_Lib:1.0.2@aar'
+
+    compile 'com.larswerkman:lobsterpicker:1.0.1'
     testCompile 'junit:junit:4.12'
 }

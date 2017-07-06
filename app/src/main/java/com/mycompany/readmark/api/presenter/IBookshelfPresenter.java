@@ -1,6 +1,7 @@
 package com.mycompany.readmark.api.presenter;
 
 
+import com.mycompany.readmark.api.ApiCompleteListener;
 import com.mycompany.readmark.bean.table.Bookshelf;
 
 /**
@@ -14,12 +15,9 @@ public interface IBookshelfPresenter {
 
     /**
      * 添加一个书架
-     *
-     * @param title    书架名称
-     * @param remark   备注
-     * @param createAt 创建时间
+     * @param bookshelf
      */
-    void addBookshelf(String title, String remark, String createAt);
+    void addBookshelf(Bookshelf bookshelf);
 
     /**
      * 修改一个书架

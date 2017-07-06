@@ -2,6 +2,7 @@ package com.mycompany.readmark.ui.activity;
 
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -9,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.AlertDialogLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,9 +29,12 @@ import com.mycompany.readmark.api.view.IBookListViewAdapter;
 import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookReviewsListResponse;
 import com.mycompany.readmark.bean.http.BookSeriesListResponse;
+import com.mycompany.readmark.bean.table.Bookshelf;
 import com.mycompany.readmark.ui.adapter.BookDetailAdapter;
 import com.mycompany.readmark.utils.commen.Blur;
-import com.mycompany.readmark.utils.commen.UIUtils;
+import com.mycompany.readmark.utils.commen.DateUtils;
+
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -137,7 +140,7 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                //IBookListViewAdapter只用实现showMessage()
                                 mBookshelfPresenter = new BookshelfPresenterImpl(new IBookListViewAdapter() {
                                     @Override
                                     public void showMessage(String msg) {
@@ -150,14 +153,49 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
                                         super.showProgress();
                                     }
                                 });
-                                mBookshelfPresenter.addBookshelf(mBookInfoResponse.getTitle(), "", System.currentTimeMillis()+"");
+                                Random random = new Random();   //创建随机颜色
+                                int red = random.nextInt(200) + 22;
+                                int green = random.nextInt(200) + 22;
+                                int blue = random.nextInt(200) + 22;
+                                int color = Color.rgb(red, green, blue);
+                                Bookshelf bookshelf = new Bookshelf();
+                                bookshelf.setTitle(mBookInfoResponse.getTitle());
+                                bookshelf.setRemark("");
+                                bookshelf.setCreateTime(DateUtils.MillsToDate(System.currentTimeMillis()));
+                                bookshelf.setColor(color);
+                                bookshelf.setFinished(0);
+                                bookshelf.setProgress(0.0f);
+                                bookshelf.setWaveratio(0.0f);
+                                bookshelf.setAmpratio(0.4f);
+                                bookshelf.setTotalpage(Integer.valueOf(mBookInfoResponse.getPages()));
+                                bookshelf.setCurrentpage(0);
+                                bookshelf.setRed(red);
+                                bookshelf.setGreen(green);
+                                bookshelf.setBlue(blue);
+
+                                /*
+                                * private int id;
+                                    private String title;
+                                    private String remark;
+                                    private String createTime;
+                                    private int color;
+                                    private int finished;
+                                    private float progress;
+                                    private float waveratio;
+                                    private float ampratio;
+                                    private int totalpage;
+                                    private int currentpage;
+                                    private int red;
+                                    private int green;
+                                    private int blue;
+                                * */
+                                mBookshelfPresenter
+                                        .addBookshelf(bookshelf);
                             }
                         })
                         .create().show();
             }
         });
-
-        Log.e("书的id是：", mBookInfoResponse.getId()+"as");
         //加载评论
         mBookDetailPresenter.loadReviews(mBookInfoResponse.getId(), PAGE * REVIEWS_COUNT, REVIEWS_COUNT, COMMENT_FIELDS);
 

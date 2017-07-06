@@ -58,7 +58,9 @@ public class BookListFragment extends BaseFragment implements IBookListView, Swi
         BookListFragment fragment = new BookListFragment();
         fragment.setArguments(args);
 
+
         return fragment;
+
     }
 
 

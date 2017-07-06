@@ -7,10 +7,11 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 import com.mycompany.readmark.R;
@@ -32,7 +33,10 @@ import butterknife.BindView;
  * Created by Lenovo.
  */
 
-public class BookshelfFragment extends BaseFragment implements IBookListView, SwipeRefreshLayout.OnRefreshListener{
+public class BookshelfFragment extends BaseFragment implements IBookListView
+        , SwipeRefreshLayout.OnRefreshListener
+        , BookshelfAdapter.OnAdjustmentConfirmListener
+        , BookshelfAdapter.OnDeleteConfirmListener{
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -54,6 +58,7 @@ public class BookshelfFragment extends BaseFragment implements IBookListView, Sw
         BookshelfFragment fragment = new BookshelfFragment();
         fragment.setArguments(args);
         return fragment;
+
     }
 
 
@@ -85,6 +90,8 @@ public class BookshelfFragment extends BaseFragment implements IBookListView, Sw
 
         mBookshelfs = new ArrayList<>();
         mBookshelfAdapter = new BookshelfAdapter(mBookshelfs, getActivity(), spanCount);
+        mBookshelfAdapter.setOnAdjustmentConfirmListener(this);
+        mBookshelfAdapter.setOnDeleteConfirmListener(this);
         mRecyclerView.setAdapter(mBookshelfAdapter);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -108,7 +115,7 @@ public class BookshelfFragment extends BaseFragment implements IBookListView, Sw
     @Override
     public void showMessage(String msg) {
         if(msg != null){
-
+            Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -149,5 +156,52 @@ public class BookshelfFragment extends BaseFragment implements IBookListView, Sw
     @Override
     public void onRefresh() {
         mBookshelfPresenter.loadBookshelf();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_sort){
+            if(mBookshelfAdapter.isSorting()){
+                mBookshelfAdapter.setSorting(false);
+                mBookshelfAdapter.notifyDataSetChanged();
+            }else{
+                mBookshelfAdapter.setSorting(true);
+                mBookshelfAdapter.notifyDataSetChanged();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*class BookshelfTouchHelperCallback extends ItemTouchHelper.SimpleCallback{
+        public BookshelfTouchHelperCallback(int dragDirs, int swipeDirs) {
+            super(dragDirs, swipeDirs);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    }*/
+
+    @Override
+    public void onAdjustmentConfirm(Bookshelf bookshelf, boolean succeed) {
+        mBookshelfPresenter.updateBookshelf(bookshelf);
+        if(succeed){
+            showMessage("保存成功");
+        }else{
+            showMessage("已读页数格式错误");
+        }
+
+    }
+
+    @Override
+    public void onDeleteConfirm(Bookshelf bookshelf) {
+        mBookshelfPresenter.deleteBookshelf(bookshelf.getId()+"");
     }
 }

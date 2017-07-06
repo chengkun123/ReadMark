@@ -145,7 +145,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+
+        int menuId = R.menu.menu_empty;
+        if(mCurrentFragment instanceof HomeFragment){
+            //不知道加什么功能
+        }else if(mCurrentFragment instanceof BookshelfFragment){
+            menuId = R.menu.menu_bookshelf;
+        }
+        getMenuInflater().inflate(menuId, menu);
+        mCurrentFragment.onCreateOptionsMenu(menu, getMenuInflater());
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        //noinspection SimplifiableIfStatement
+        //分发点击事件给下层
+        mCurrentFragment.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
 

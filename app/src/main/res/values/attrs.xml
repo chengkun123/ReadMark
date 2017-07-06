@@ -15,6 +15,20 @@
     <attr name="myTextColor" format="color"/>
 
 
+    <!--
+    WaveLoadingView相关
+    -->
+    <declare-styleable name="WaveLoadingView">
+        <attr name="wlv_shapeType" format="enum">
+            <enum name="circle" value="0" />
+            <enum name="square" value="1" />
+        </attr>
+        <attr name="wlv_waveColor" format="color"/>
+        <attr name="wlv_waveAmplitudeRatio" format="float"/>
+        <attr name="wlv_waveLengthRation" format="float"/>
+    </declare-styleable>
+
+
 
     <!--仿知乎相关 -->
     <declare-styleable name="FabTagLayout">
