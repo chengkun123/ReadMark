@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    android:background="?attr/myBackground"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="16dp"
@@ -18,12 +19,13 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="?attr/myTextColor"
         android:ellipsize="end"
         android:lines="1"
         android:maxEms="7"
         android:padding="4dp"
         android:text="狼图腾"
-        android:textColor="?android:attr/textColorPrimaryInverse"
+
         android:textSize="12sp"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,9 +49,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:textColor="?attr/myTextColor"
             android:layout_marginLeft="2dp"
             android:text="8.3"
-            android:textColor="?android:attr/textColorSecondary"
             android:textSize="10sp"/>
     </LinearLayout>
 </LinearLayout>

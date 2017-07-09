@@ -1,6 +1,7 @@
 package com.mycompany.readmark.themechangeframe;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -8,7 +9,7 @@ import android.view.View;
 /**
  * Created by Lenovo on 2017/2/16.
  */
-public abstract class ViewSetter {
+public abstract class ViewSetter implements Comparable {
     protected View mTargetView;
     protected int mTargetViewId;
     protected int mAttrId;
@@ -30,5 +31,14 @@ public abstract class ViewSetter {
         TypedValue typedValue = new TypedValue();
         theme.resolveAttribute(mAttrId, typedValue, true);
         return typedValue.data;
+    }
+
+    public View getTargetView() {
+        return mTargetView;
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        return this.hashCode() - o.hashCode();
     }
 }

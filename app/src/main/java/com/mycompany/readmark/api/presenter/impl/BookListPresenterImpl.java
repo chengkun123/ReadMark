@@ -51,8 +51,8 @@ public class BookListPresenterImpl implements IBookListPresenter, ApiCompleteLis
             }else{
                 mIBookListView.addData(result);
             }
-            mIBookListView.hideProgress();
         }
+        mIBookListView.hideProgress();
     }
 
     @Override

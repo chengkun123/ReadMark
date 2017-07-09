@@ -19,6 +19,7 @@ import com.mycompany.readmark.api.presenter.impl.BookListPresenterImpl;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookListResponse;
+import com.mycompany.readmark.ui.activity.MainActivity;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
 import com.mycompany.readmark.utils.commen.DensityUtils;
 
@@ -57,10 +58,7 @@ public class BookListFragment extends BaseFragment implements IBookListView, Swi
 
         BookListFragment fragment = new BookListFragment();
         fragment.setArguments(args);
-
-
         return fragment;
-
     }
 
 
@@ -73,6 +71,20 @@ public class BookListFragment extends BaseFragment implements IBookListView, Swi
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity)getActivity()).setThemeSetter(mRootView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        //在这里回调传回mRootView
+        if(mRootView != null){
+            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+        }
+        super.onDestroyView();
+    }
 
     @Override
     protected void initRootView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

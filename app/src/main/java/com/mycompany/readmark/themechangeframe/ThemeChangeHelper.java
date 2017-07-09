@@ -9,10 +9,23 @@ import android.content.SharedPreferences;
 public class ThemeChangeHelper {
     private final static String FILE_NAME = "theme_settings";
     private final static String MODE = "theme_mode";
+    private static volatile ThemeChangeHelper sThemeChangeHelper;
+
 
     private SharedPreferences mSharedPreferences;
 
-    public ThemeChangeHelper(Context context){
+    public static ThemeChangeHelper getThemeChangeHelper(Context context){
+        if(sThemeChangeHelper == null){
+            synchronized (ThemeChangeHelper.class){
+                if(sThemeChangeHelper == null){
+                    sThemeChangeHelper = new ThemeChangeHelper(context);
+                }
+            }
+        }
+        return sThemeChangeHelper;
+    }
+
+    private ThemeChangeHelper(Context context){
         mSharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 

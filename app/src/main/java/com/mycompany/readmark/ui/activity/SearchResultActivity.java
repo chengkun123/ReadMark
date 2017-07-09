@@ -16,7 +16,9 @@ import com.mycompany.readmark.api.presenter.impl.BookListPresenterImpl;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookListResponse;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
+import com.mycompany.readmark.utils.commen.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +50,19 @@ public class SearchResultActivity extends BaseActivity implements IBookListView,
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        initTheme();
         setContentView(R.layout.activity_search_result);
         ButterKnife.bind(this);
         super.onCreate(savedInstanceState);
     }
 
+    private void initTheme() {
+        if(ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext()).isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
+    }
     @Override
     protected void initEvents() {
         q = getIntent().getStringExtra("q");
@@ -108,6 +118,7 @@ public class SearchResultActivity extends BaseActivity implements IBookListView,
         if(msg != null){
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -147,6 +158,7 @@ public class SearchResultActivity extends BaseActivity implements IBookListView,
             mBookListAdapter.notifyDataSetChanged();
             page++;
         }
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -160,6 +172,7 @@ public class SearchResultActivity extends BaseActivity implements IBookListView,
             mBookListAdapter.notifyDataSetChanged();
             page++;
         }
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

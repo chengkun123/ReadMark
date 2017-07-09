@@ -1,5 +1,6 @@
 package com.mycompany.readmark.holder;
 
+import android.content.Context;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +23,16 @@ public class BookSeriesCeilHolder {
     private TextView tv_title;
     private AppCompatRatingBar ratingBar_hots;
     private TextView tv_hots_num;
-
-    public BookSeriesCeilHolder(BookInfoResponse response){
+    private Context mContext;
+    public BookSeriesCeilHolder(Context context, BookInfoResponse response){
+        mContext = context;
         mBookInfoResponse = response;
         initView();
         initEvent();
     }
 
     private void initView(){
-        mContentView = LayoutInflater.from(UIUtils.getContext()).inflate(R.layout.item_book_series_ceil, null, false);
+        mContentView = LayoutInflater.from(mContext).inflate(R.layout.item_book_series_ceil, null, false);
         iv_book_img = (ImageView) mContentView.findViewById(R.id.iv_book_img);
         tv_title = (TextView) mContentView.findViewById(R.id.tv_title);
         ratingBar_hots = (AppCompatRatingBar) mContentView.findViewById(R.id.ratingBar_hots);

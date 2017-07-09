@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 
 import com.mycompany.readmark.R;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.ui.adapter.TagAdapter;
 import com.mycompany.readmark.ui.widget.FlowLayout;
 import com.mycompany.readmark.utils.commen.UIUtils;
@@ -41,6 +42,7 @@ public class SearchActivity extends AppCompatActivity implements FlowLayout.OnTa
         }else{
             setTheme(R.style.NightTheme);
         }*/
+        initTheme();
         setContentView(R.layout.activity_search);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -66,6 +68,13 @@ public class SearchActivity extends AppCompatActivity implements FlowLayout.OnTa
     public void onResume(){
         super.onResume();
 
+    }
+    private void initTheme() {
+        if(ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext()).isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -16,6 +16,9 @@ import android.view.WindowManager;
 import com.mycompany.readmark.BaseApplication;
 import com.mycompany.readmark.R;
 import com.mycompany.readmark.commen.Constant;
+import com.mycompany.readmark.themechangeframe.DayNight;
+import com.mycompany.readmark.themechangeframe.MyThemeChanger;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.utils.commen.SPUtils;
 import com.mycompany.readmark.utils.commen.UIUtils;
 import com.mycompany.readmark.utils.customtabs.SystemBarTintManager;
@@ -29,7 +32,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     //这个变量其实是来保存当前显示的Activity，也就是最后创建的一个Activity
     public static BaseActivity activity;
     protected Toolbar mToolbar;
-
+    protected static ThemeChangeHelper mThemeChangeHelper;
+    //protected MyThemeChanger mMyThemeChanger;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +43,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         init();
 
     }
+
+    /*private void initTheme() {
+        if(mThemeChangeHelper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
+    }*/
+
+    /*private void initThemeHelper() {
+        //mMyThemeChanger = MyThemeChanger.getMyThemeChanger(activity);
+        if(mThemeChangeHelper == null){
+            mThemeChangeHelper = new ThemeChangeHelper(UIUtils.getContext());
+        }
+    }*/
+
 
     /**
      *

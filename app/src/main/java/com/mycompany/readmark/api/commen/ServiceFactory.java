@@ -43,7 +43,7 @@ public class ServiceFactory {
                     okHttpClient = new OkHttpClient.Builder()
                             .cache(cache)
                             .retryOnConnectionFailure(true)
-                            .addInterceptor(interceptor)
+                            //.addInterceptor(interceptor)
                             //.addInterceptor(REQUEST_INTERCEPTOR)
                             //.addNetworkInterceptor(RESPONSE_INTERCEPTOR)
                             //.addInterceptor(LoggingInterceptor)

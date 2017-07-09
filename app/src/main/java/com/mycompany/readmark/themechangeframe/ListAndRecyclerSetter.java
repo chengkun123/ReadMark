@@ -12,13 +12,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by Lenovo on 2017/2/16.
  */
 public class ListAndRecyclerSetter extends ViewSetter{
 
-    protected Set<ViewSetter> mItemChildViewSetters = new HashSet<>();
+    protected Set<ViewSetter> mItemChildViewSetters = new ConcurrentSkipListSet<>();
 
     public ListAndRecyclerSetter(View targetView){
         this(targetView, 0);
@@ -28,6 +29,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
         super(targetView, attrId);
     }
 
+    //并不直接把View和ViewSetter绑定，后面动态为Setter的view赋值
     public ListAndRecyclerSetter addSchemedChildViewBgColor(int viewId, int attrId){
         mItemChildViewSetters.add(new ViewBgColorSetter(viewId, attrId));
         return this;
@@ -37,6 +39,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
         mItemChildViewSetters.add(new ViewTextColorSetter(viewId, attrId));
         return this;
     }
+
 
     @Override
     public void setValue(Resources.Theme theme, int themeId) {
@@ -54,7 +57,9 @@ public class ListAndRecyclerSetter extends ViewSetter{
             View childView = targetViewGroup.getChildAt(i);
             for(ViewSetter setter : mItemChildViewSetters){
                 setter.mTargetView = ((ViewGroup)childView).findViewById(setter.mTargetViewId);
-                setter.setValue(theme, themeId);
+                if(setter.mTargetView != null){
+                    setter.setValue(theme, themeId);
+                }
             }
         }
     }
@@ -97,7 +102,7 @@ public class ListAndRecyclerSetter extends ViewSetter{
                 //RecycledViewPool clear
                 RecyclerView.RecycledViewPool recycledViewPool = ((RecyclerView) rootView).getRecycledViewPool();
                 recycledViewPool.clear();
-
+                Log.e("清空", "RecyclerView");
             }catch (NoSuchFieldException e){
                 e.printStackTrace();
             }catch (ClassNotFoundException e){

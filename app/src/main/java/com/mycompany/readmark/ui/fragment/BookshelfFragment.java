@@ -105,6 +105,15 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ((MainActivity)getActivity()).setToolbar(mToolbar);
+        ((MainActivity)getActivity()).setThemeSetter(mRootView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if(mRootView != null){
+            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+        }
+        super.onDestroyView();
     }
 
     @Override

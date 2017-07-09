@@ -210,7 +210,7 @@ public class BookDetailAdapter extends RecyclerView.Adapter {
                 BookSeriesCeilHolder ceilHolder;
                 ((BookSeriesHolder) holder).ll_series_content.removeAllViews();
                 for(int i=0; i<seriesBooks.size(); i++){
-                    ceilHolder = new BookSeriesCeilHolder(seriesBooks.get(i));
+                    ceilHolder = new BookSeriesCeilHolder(holder.itemView.getContext(), seriesBooks.get(i));
                     ((BookSeriesHolder) holder).ll_series_content.addView(ceilHolder.getContentView());
                 }
             }

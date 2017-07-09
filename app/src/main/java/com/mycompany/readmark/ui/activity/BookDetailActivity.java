@@ -30,9 +30,11 @@ import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookReviewsListResponse;
 import com.mycompany.readmark.bean.http.BookSeriesListResponse;
 import com.mycompany.readmark.bean.table.Bookshelf;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.ui.adapter.BookDetailAdapter;
 import com.mycompany.readmark.utils.commen.Blur;
 import com.mycompany.readmark.utils.commen.DateUtils;
+import com.mycompany.readmark.utils.commen.UIUtils;
 
 import java.util.Random;
 
@@ -80,10 +82,19 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.e("onCreate", "调用了");
+        initTheme();
         setContentView(R.layout.activity_book_detail);
         ButterKnife.bind(this);
         super.onCreate(savedInstanceState);
         mToolbar.setNavigationIcon(AppCompatResources.getDrawable(this, R.drawable.ic_action_clear));
+    }
+
+    private void initTheme() {
+        if(ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext()).isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.mycompany.readmark.api.model.impl;
 
 
 
+import android.util.Log;
+
 import com.mycompany.readmark.api.ApiCompleteListener;
 import com.mycompany.readmark.api.commen.ServiceFactory;
 import com.mycompany.readmark.api.commen.service.IBookListService;
@@ -33,7 +35,7 @@ public class BookListModelImpl implements IBookListModel {
                 .subscribe(new Subscriber<Response<BookListResponse>>() {
                     @Override
                     public void onCompleted() {
-
+                        listener.onCompleted("");
                     }
 
                     @Override

@@ -7,9 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -88,7 +86,16 @@ public class HomeFragment extends BaseFragment{
         super.onActivityCreated(savedInstanceState);
         initViewPager();
         ((MainActivity)getActivity()).setToolbar(mToolbar);
+        ((MainActivity)getActivity()).setThemeSetter(mRootView);
         //((MainActivity)getActivity()).setFab(mFab);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if(mRootView != null){
+            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+        }
+        super.onDestroyView();
     }
 
     private void initViewPager(){
@@ -99,7 +106,7 @@ public class HomeFragment extends BaseFragment{
         mFragments.add(BookListFragment.newInstance("经典"));
 
         mViewPager.setAdapter(new HomeAdapter(getChildFragmentManager(), mFragments));
-        mViewPager.setOffscreenPageLimit(5);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setCurrentItem(2);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.setSelectedTabIndicatorColor(getContext().getResources().getColor(R.color.white));

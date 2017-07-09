@@ -8,6 +8,8 @@
     >
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:background="?attr/myBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -25,6 +27,8 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            app:tabTextColor="?attr/myTextColor"
             app:tabIndicatorHeight="2dp"
             app:tabMode="fixed" />
 

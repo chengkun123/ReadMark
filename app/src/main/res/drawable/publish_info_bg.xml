@@ -3,6 +3,6 @@
        xmlns:app="http://schemas.android.com/apk/res-auto"
        android:shape="rectangle">
     <corners android:radius="6dp"></corners>
-    <solid app:color="?attr/publishInfoBackground"></solid>
+    <solid app:color="?attr/myBackground"></solid>
 
 </shape>

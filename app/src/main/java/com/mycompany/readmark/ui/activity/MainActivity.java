@@ -2,24 +2,38 @@ package com.mycompany.readmark.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 
 import com.mycompany.readmark.R;
+import com.mycompany.readmark.themechangeframe.DayNight;
+import com.mycompany.readmark.themechangeframe.ListAndRecyclerSetter;
+import com.mycompany.readmark.themechangeframe.MyThemeChanger;
+import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
+import com.mycompany.readmark.themechangeframe.ThemeChanger;
+import com.mycompany.readmark.themechangeframe.ViewBgColorSetter;
+import com.mycompany.readmark.themechangeframe.ViewTextColorSetter;
 import com.mycompany.readmark.ui.fragment.BaseFragment;
 import com.mycompany.readmark.ui.fragment.BookshelfFragment;
 import com.mycompany.readmark.ui.fragment.HomeFragment;
+import com.mycompany.readmark.utils.commen.UIUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,14 +58,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private BaseFragment mCurrentFragment;
     private FragmentManager mFragmentManager;
 
+    private MyThemeChanger mMyThemeChanger;
+    private ThemeChangeHelper mThemeChangeHelper;
+
+
     private long lastTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTheme();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         if(mFragmentManager == null){
             mFragmentManager = getSupportFragmentManager();
         }
@@ -63,8 +81,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     .replace(R.id.fl_content, mCurrentFragment)
                     .commit();
         }
-        initNavView();
 
+        if(mMyThemeChanger == null){
+            mMyThemeChanger = MyThemeChanger.getMyThemeChanger(this);
+        }
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fl_content);
+        mMyThemeChanger.addViewSetter(new ViewBgColorSetter(frameLayout, R.attr.myBackground));
+        mMyThemeChanger.addViewSetter(new ViewBgColorSetter(mNavigationView, R.attr.myBackground));
+        initNavView();
+    }
+
+    private void initTheme() {
+        mThemeChangeHelper= ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext());
+        if(mThemeChangeHelper.isDay()){
+            setTheme(R.style.DayTheme);
+        }else{
+            setTheme(R.style.NightTheme);
+        }
     }
 
     private void initNavView(){
@@ -73,16 +106,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mThemeSwitch = (SwitchCompat) MenuItemCompat
                 .getActionView(item)
                 .findViewById(R.id.theme_switch);
-        mThemeSwitch.setChecked(true);
+        //
+        mThemeSwitch.setChecked(!mThemeChangeHelper.isDay());
 
-
+        mThemeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mThemeChangeHelper.setMode(isChecked ? DayNight.NIGHT : DayNight.DAY);
+                mMyThemeChanger.setTheme(isChecked ? R.style.NightTheme : R.style.DayTheme);
+            }
+        });
     }
 
 
     public void setToolbar(Toolbar toolbar){
         if(toolbar != null){
-            Log.e("调用了","....");
-
             mToolbar = toolbar;
             setSupportActionBar(toolbar);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -98,6 +136,59 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mNavigationView.setNavigationItemSelectedListener(this);
         }
     }
+
+    public void setThemeSetter(View rootView){
+        //Log.e("setThemeSetter", "调用了");
+
+        AppBarLayout appBarLayout = (AppBarLayout) rootView.findViewById(R.id.app_bar);
+        if(appBarLayout != null){
+            //Log.e("appbar", "不空");
+            Log.e("Context是？", (appBarLayout.getContext() == MainActivity.this)+"");
+            ViewBgColorSetter viewBgColorSetter = new ViewBgColorSetter(appBarLayout, R.attr.colorPrimary);
+            mMyThemeChanger.addViewSetter(viewBgColorSetter);
+        }
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        if(toolbar != null){
+
+            Log.e("Context是？", (toolbar.getContext() == MainActivity.this)+"");
+            ViewBgColorSetter toolbarSetter = new ViewBgColorSetter(toolbar, R.attr.colorPrimary);
+            mMyThemeChanger.addViewSetter(toolbarSetter);
+        }
+        TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
+        if(tabLayout != null){
+            Log.e("Context是？", (tabLayout.getContext() == MainActivity.this)+"");
+            ViewBgColorSetter tablayoutSetter = new ViewBgColorSetter(tabLayout, R.attr.colorPrimary);
+            mMyThemeChanger.addViewSetter(tablayoutSetter);
+            /*ViewTextColorSetter tablayouttextSetter = new ViewTextColorSetter(tabLayout, R.attr.myTextColor);
+            mMyThemeChanger.addViewSetter(tablayouttextSetter);*/
+
+        }
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        if(recyclerView != null){
+            Log.e("Context是？", (recyclerView.getContext() == MainActivity.this)+"");
+            //Log.e("recycle", "不空");
+            ListAndRecyclerSetter listAndRecyclerSetter = new ListAndRecyclerSetter(recyclerView);
+            listAndRecyclerSetter.addSchemedChildViewBgColor(R.id.book_list_cardview, R.attr.myBackground)
+                    .addSchemedChildViewBgColor(R.id.book_shelf_cardview, R.attr.myBackground)
+                    .addSchemedChildViewBgColor(R.id.book_list_item_layout, R.attr.myBackground)
+                    .addSchemedChildViewBgColor(R.id.book_list_item_text_layout, R.attr.myBackground)
+                    .addSchemedChildViewBgColor(R.id.book_list_desc_layout, R.attr.myBackground)
+                    .addSchemedChildViewTextColor(R.id.tv_book_title, R.attr.myTextColor)
+                    .addSchemedChildViewTextColor(R.id.tv_hots_num, R.attr.myTextColor)
+                    .addSchemedChildViewTextColor(R.id.tv_book_info, R.attr.myTextColor)
+                    .addSchemedChildViewTextColor(R.id.tv_book_description, R.attr.myTextColor);
+            ViewBgColorSetter rviewBgColorSetter = new ViewBgColorSetter(recyclerView, R.attr.myBackground);
+            mMyThemeChanger.addViewSetter(listAndRecyclerSetter);
+            mMyThemeChanger.addViewSetter(rviewBgColorSetter);
+        }
+    }
+
+    public void clearThemeSetter(View rootView){
+        Log.e("clearThemeSetter", "调用了");
+        mMyThemeChanger.deleteViewSetter(rootView);
+    }
+
 
     /*public void setFab(FloatingActionButton fab) {
         mFab = fab;
