@@ -6,6 +6,11 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
 
+    <!--需要改变的颜色-->
+    <color name="skin_bg_color">#ffffff</color>
+    <color name="skin_text_color">#000000</color>
+
+
 
     <color name="color3A3A3A">#3A3A3A</color>
     <color name="color3F3F3F">#3F3F3F</color>

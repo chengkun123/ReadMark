@@ -30,10 +30,15 @@ public class BookshelfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private int columns;
     private OnAdjustmentConfirmListener mOnAdjustmentConfirmListener;
     private OnDeleteConfirmListener mOnDeleteConfirmListener;
-
+    private OnBookshelfClickListener mOnBookshelfClickListener;
 
     //private boolean isFinished;
     private boolean isSorting;
+
+    public void setOnBookshelfClickListener(OnBookshelfClickListener listener){
+        mOnBookshelfClickListener = listener;
+    }
+
 
     public void setOnAdjustmentConfirmListener(OnAdjustmentConfirmListener listener){
         mOnAdjustmentConfirmListener = listener;
@@ -93,15 +98,22 @@ public class BookshelfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //这里是有用的
                         //这里显示水波纹进度
-                        //Toast.makeText(mContext, "显示第"+ position +"的进度", Toast.LENGTH_SHORT).show();
-                        showWaveLoadingView(mContext, bookshelf);
+                        //showWaveLoadingView(mContext, bookshelf);
+
+                        //暂时回调出去让Activity创建新的Fragment显示水波纹
+                        mOnBookshelfClickListener.onBookshelfClick(bookshelf);
                     }
                 });
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        showDeleteDialog(mContext, bookshelf);
+                        //这里是有用的
+                        //showDeleteDialog(mContext, bookshelf);
+
+                        //暂时先直接删除
+                        mOnDeleteConfirmListener.onDeleteConfirm(bookshelf);
                         return true;
                     }
                 });
@@ -114,7 +126,7 @@ public class BookshelfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     /*
-    * 删除书签
+    * 删除书签的Dialog
     * */
     private void showDeleteDialog(Context context, final Bookshelf bookshelf){
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -140,7 +152,8 @@ public class BookshelfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     * 进度管理
     * */
     private void showWaveLoadingView(Context context, final Bookshelf bookshelf){
-        final WaveLoadingViewHolder waveLoadingViewHolder = new WaveLoadingViewHolder(context, bookshelf);
+        final WaveLoadingViewHolder waveLoadingViewHolder =
+                new WaveLoadingViewHolder(context, bookshelf, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         //final int space = DensityUtils.dp2px(UIUtils.getContext(), 16);
@@ -227,6 +240,11 @@ public class BookshelfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setSorting(boolean sorting) {
         isSorting = sorting;
+    }
+
+
+    public interface OnBookshelfClickListener{
+        void onBookshelfClick(Bookshelf bookshelf);
     }
 
 

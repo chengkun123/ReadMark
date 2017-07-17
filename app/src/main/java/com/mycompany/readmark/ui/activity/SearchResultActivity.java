@@ -17,6 +17,7 @@ import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookListResponse;
 import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
+import com.mycompany.readmark.themechangeframeV2.skin.BaseSkinActivity;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
 import com.mycompany.readmark.utils.commen.UIUtils;
 
@@ -30,7 +31,7 @@ import butterknife.ButterKnife;
  * Created by Lenovo.
  */
 
-public class SearchResultActivity extends BaseActivity implements IBookListView, SwipeRefreshLayout.OnRefreshListener {
+public class SearchResultActivity extends BaseSkinActivity implements IBookListView, SwipeRefreshLayout.OnRefreshListener {
     private static String q;
     private static final String fields = "id,title,subtitle,origin_title,rating,author,translator,publisher,pubdate,summary,images,pages,price,binding,isbn13";
     private static final int count = 20;
@@ -50,10 +51,11 @@ public class SearchResultActivity extends BaseActivity implements IBookListView,
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        initTheme();
+        //initTheme();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         ButterKnife.bind(this);
-        super.onCreate(savedInstanceState);
+        initEvents();
     }
 
     private void initTheme() {

@@ -135,7 +135,7 @@ public class BookshelfModelImpl implements IBookshelfModel{
             values.put("green", bookshelf.getGreen());
             values.put("blue", bookshelf.getBlue());
             db.update("bookshelf", values, "id=?", bookshelf.getId() + "");
-            //listener.onCompleted("更新成功");
+            listener.onCompleted("");
         } else {
             listener.onFailed(new BaseResponse(500, "db error : update"));
         }

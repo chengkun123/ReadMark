@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="?attr/myBackground"
+              android:background="@color/skin_bg_color"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginTop="8dp"
@@ -13,7 +13,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:text="@string/comment"
-        android:textColor="?attr/myTextColor"
+        android:textColor="@color/skin_text_color"
         android:textSize="16sp"
         android:visibility="gone" />
 
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:paddingBottom="@dimen/activity_horizontal_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
@@ -33,7 +33,7 @@
             android:layout_height="24dp" />
 
         <RelativeLayout
-            android:background="?attr/myBackground"
+            android:background="@color/skin_bg_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp">
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="hymanme"
-                android:textColor="?attr/myTextColor"
+                android:textColor="@color/skin_text_color"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
                 android:layout_below="@+id/tv_user_name"
                 android:layout_marginBottom="6dp"
                 android:layout_marginTop="6dp"
-                android:textColor="?attr/myTextColor"
+                android:textColor="@color/skin_text_color"
                 android:textSize="14sp" />
 
             <ImageView
@@ -89,7 +89,7 @@
                 android:layout_marginLeft="4dp"
                 android:layout_toRightOf="@+id/iv_favorite"
                 android:gravity="center_vertical"
-                android:textColor="?attr/myTextColor"
+                android:textColor="@color/skin_text_color"
                 android:textSize="12sp" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/tv_comment_content"
                 android:gravity="center_vertical"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/skin_text_color"
                 android:textSize="12sp" />
         </RelativeLayout>
     </LinearLayout>
@@ -114,7 +114,7 @@
         android:gravity="center_horizontal"
         android:padding="8dp"
         android:text="更多评论?条"
-        android:textColor="?attr/colorAccent"
+        android:textColor="@color/colorAccent"
         android:textSize="14sp"
         android:visibility="gone" />
 </LinearLayout>

@@ -33,7 +33,8 @@ import butterknife.BindView;
  * Created by Lenovo.
  */
 
-public class BookListFragment extends BaseFragment implements IBookListView, SwipeRefreshLayout.OnRefreshListener{
+public class BookListFragment extends BaseFragment
+        implements IBookListView, SwipeRefreshLayout.OnRefreshListener{
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
@@ -74,14 +75,14 @@ public class BookListFragment extends BaseFragment implements IBookListView, Swi
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((MainActivity)getActivity()).setThemeSetter(mRootView);
+        //((MainActivity)getActivity()).setThemeSetter(mRootView);
     }
 
     @Override
     public void onDestroyView() {
         //在这里回调传回mRootView
         if(mRootView != null){
-            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+            //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();
     }

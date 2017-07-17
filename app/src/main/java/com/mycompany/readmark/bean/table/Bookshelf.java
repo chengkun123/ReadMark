@@ -1,10 +1,13 @@
 package com.mycompany.readmark.bean.table;
 
+import java.io.Serializable;
+
 /**
  * Created by Lenovo.
  */
 
-public class Bookshelf {
+public class Bookshelf implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String title;

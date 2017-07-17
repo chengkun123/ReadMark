@@ -86,14 +86,14 @@ public class HomeFragment extends BaseFragment{
         super.onActivityCreated(savedInstanceState);
         initViewPager();
         ((MainActivity)getActivity()).setToolbar(mToolbar);
-        ((MainActivity)getActivity()).setThemeSetter(mRootView);
+        //((MainActivity)getActivity()).setThemeSetter(mRootView);
         //((MainActivity)getActivity()).setFab(mFab);
     }
 
     @Override
     public void onDestroyView() {
         if(mRootView != null){
-            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+            //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();
     }

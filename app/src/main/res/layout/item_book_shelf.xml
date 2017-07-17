@@ -5,13 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="220dp"
     android:id="@+id/book_shelf_cardview"
-    app:cardBackgroundColor="?attr/myBackground">
+    app:cardBackgroundColor="@color/skin_bg_color">
 
     <RelativeLayout
         android:id="@+id/rl_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/grass_green">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/tv_bookshelf_name"
@@ -25,7 +24,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:text="--"
-            android:textColor="@color/primary_text_dark"
+            android:textColor="@color/skin_text_color"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -38,7 +37,7 @@
             android:layout_marginBottom="4dp"
             android:layout_marginRight="8dp"
             android:text="--"
-            android:textColor="@color/primary_text_dark"
+            android:textColor="@color/skin_text_color"
             android:textSize="12sp" />
 
         <TextView
@@ -51,7 +50,7 @@
             android:maxLines="2"
             android:paddingBottom="6dp"
             android:text="---"
-            android:textColor="@color/primary_text_dark"
+            android:textColor="@color/skin_text_color"
             android:textSize="12sp" />
 
     </RelativeLayout>

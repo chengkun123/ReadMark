@@ -9,7 +9,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v7.widget.RecyclerView
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

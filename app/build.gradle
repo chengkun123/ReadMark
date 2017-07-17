@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.mycompany.readmark"
-        minSdkVersion 21
-        targetSdkVersion 25
+        minSdkVersion 15
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

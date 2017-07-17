@@ -4,6 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="160dp"
               android:orientation="vertical"
+              android:background="@color/skin_bg_color"
               android:padding="16dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -21,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="阅记"
+        android:textColor="@color/skin_text_color"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         />

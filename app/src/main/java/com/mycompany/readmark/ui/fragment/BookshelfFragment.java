@@ -92,6 +92,7 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
         mBookshelfAdapter = new BookshelfAdapter(mBookshelfs, getActivity(), spanCount);
         mBookshelfAdapter.setOnAdjustmentConfirmListener(this);
         mBookshelfAdapter.setOnDeleteConfirmListener(this);
+        mBookshelfAdapter.setOnBookshelfClickListener((BookshelfAdapter.OnBookshelfClickListener) getActivity());
         mRecyclerView.setAdapter(mBookshelfAdapter);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -105,13 +106,13 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ((MainActivity)getActivity()).setToolbar(mToolbar);
-        ((MainActivity)getActivity()).setThemeSetter(mRootView);
+        //((MainActivity)getActivity()).setThemeSetter(mRootView);
     }
 
     @Override
     public void onDestroyView() {
         if(mRootView != null){
-            ((MainActivity)getActivity()).clearThemeSetter(mRootView);
+            //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();
     }

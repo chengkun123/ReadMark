@@ -32,7 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     //这个变量其实是来保存当前显示的Activity，也就是最后创建的一个Activity
     public static BaseActivity activity;
     protected Toolbar mToolbar;
-    protected static ThemeChangeHelper mThemeChangeHelper;
+    //protected static ThemeChangeHelper mThemeChangeHelper;
     //protected MyThemeChanger mMyThemeChanger;
 
     @Override
@@ -41,7 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         activity = this;
         ((BaseApplication) UIUtils.getContext()).addActivity(this);
         init();
-
     }
 
     /*private void initTheme() {
@@ -126,7 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void init(){
         initData();
-        initEvents();
+        //initEvents();
         if(isInitSystemBar()){
             initSystemBar(this);
         }

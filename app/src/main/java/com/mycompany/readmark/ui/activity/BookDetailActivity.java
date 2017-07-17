@@ -31,6 +31,7 @@ import com.mycompany.readmark.bean.http.BookReviewsListResponse;
 import com.mycompany.readmark.bean.http.BookSeriesListResponse;
 import com.mycompany.readmark.bean.table.Bookshelf;
 import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
+import com.mycompany.readmark.themechangeframeV2.skin.BaseSkinActivity;
 import com.mycompany.readmark.ui.adapter.BookDetailAdapter;
 import com.mycompany.readmark.utils.commen.Blur;
 import com.mycompany.readmark.utils.commen.DateUtils;
@@ -45,7 +46,7 @@ import butterknife.ButterKnife;
  * Created by Lenovo.
  */
 
-public class BookDetailActivity extends BaseActivity implements IBookDetailView {
+public class BookDetailActivity extends BaseSkinActivity implements IBookDetailView {
 
     private static final String COMMENT_FIELDS = "id,rating,author,title,updated,comments,summary,votes,useless";
     private static final String SERIES_FIELDS = "id,title,subtitle,origin_title,rating,author,translator,publisher,pubdate,summary,images,pages,price,binding,isbn13,series";
@@ -81,11 +82,13 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.e("onCreate", "调用了");
-        initTheme();
+        //Log.e("onCreate", "调用了");
+        //initTheme();
+
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
         ButterKnife.bind(this);
-        super.onCreate(savedInstanceState);
+        initEvents();
         mToolbar.setNavigationIcon(AppCompatResources.getDrawable(this, R.drawable.ic_action_clear));
     }
 
@@ -139,7 +142,8 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(BookDetailActivity.this);
+                saveBook();
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(BookDetailActivity.this);
                 builder.setCancelable(false)
                         .setTitle("确定添加书签？")
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -184,7 +188,7 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
                                 bookshelf.setGreen(green);
                                 bookshelf.setBlue(blue);
 
-                                /*
+                                *//*
                                 * private int id;
                                     private String title;
                                     private String remark;
@@ -199,17 +203,55 @@ public class BookDetailActivity extends BaseActivity implements IBookDetailView 
                                     private int red;
                                     private int green;
                                     private int blue;
-                                * */
+                                * *//*
                                 mBookshelfPresenter
                                         .addBookshelf(bookshelf);
                             }
                         })
-                        .create().show();
+                        .create()
+                        .show();*/
             }
         });
         //加载评论
         mBookDetailPresenter.loadReviews(mBookInfoResponse.getId(), PAGE * REVIEWS_COUNT, REVIEWS_COUNT, COMMENT_FIELDS);
 
+    }
+
+    private void saveBook() {
+        mBookshelfPresenter = new BookshelfPresenterImpl(new IBookListViewAdapter() {
+            @Override
+            public void showMessage(String msg) {
+                super.showMessage(msg);
+                Toast.makeText(BookDetailActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void showProgress() {
+                super.showProgress();
+            }
+        });
+        Random random = new Random();   //创建随机颜色
+        int red = random.nextInt(200) + 22;
+        int green = random.nextInt(200) + 22;
+        int blue = random.nextInt(200) + 22;
+        int color = Color.rgb(red, green, blue);
+        Bookshelf bookshelf = new Bookshelf();
+        bookshelf.setTitle(mBookInfoResponse.getTitle());
+        bookshelf.setRemark("");
+        bookshelf.setCreateTime(DateUtils.MillsToDate(System.currentTimeMillis()));
+        bookshelf.setColor(color);
+        bookshelf.setFinished(0);
+        bookshelf.setProgress(0.0f);
+        bookshelf.setWaveratio(0.0f);
+        bookshelf.setAmpratio(0.4f);
+        bookshelf.setTotalpage(Integer.valueOf(mBookInfoResponse.getPages()));
+        bookshelf.setCurrentpage(0);
+        bookshelf.setRed(red);
+        bookshelf.setGreen(green);
+        bookshelf.setBlue(blue);
+        mBookshelfPresenter
+                .addBookshelf(bookshelf);
+        //Toast.makeText(BookDetailActivity.this, "已保存到书签", Toast.LENGTH_SHORT).show();
     }
 
     @Override

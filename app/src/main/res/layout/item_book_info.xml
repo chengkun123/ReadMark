@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="?attr/myBackground"
+              android:background="@color/skin_bg_color"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_margin="@dimen/activity_horizontal_margin"
               android:orientation="vertical">
 
     <LinearLayout
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -33,7 +33,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="6dp"
             android:text="8.3"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="10sp" />
 
         <TextView
@@ -43,12 +43,12 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="6dp"
             android:text="214人评分"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="10sp" />
     </LinearLayout>
 
     <RelativeLayout
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:id="@+id/rl_more_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:padding="5dp"
             android:singleLine="true"
             android:text="[日]某某/某某出版社/2015-4[日]某某/某某出版社/2015-4[日]某某/某某出版社/2015-4"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="12sp"/>
 
         <ImageView
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="作者:"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="出版社:xxx"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -113,7 +113,7 @@
             android:lines="1"
             android:maxEms="18"
             android:text="副标题:xxx"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="原作名:xxx"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="译者:xxx"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="出版年:2016-1"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -149,7 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="页数:333"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -158,7 +158,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="定价:36.00"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -167,7 +167,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="装帧:精装"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -176,12 +176,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:text="isbn:78921793717"
-            android:textColor="?attr/myTextColor"
+            android:textColor="@color/skin_text_color"
             android:textSize="14sp" />
     </LinearLayout>
 
     <FrameLayout
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
@@ -196,7 +196,7 @@
             android:layout_marginLeft="1dp"
             android:layout_marginRight="1dp"
             android:layout_marginTop="2dp"
-            android:background="?attr/myBackground">
+            android:background="@color/skin_bg_color">
 
         </View>
 

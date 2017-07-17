@@ -11,7 +11,7 @@
 
     <FrameLayout
         android:id="@+id/fl_content"
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_below="@+id/appBarLayout"
@@ -23,7 +23,7 @@
 
 
     <android.support.design.widget.NavigationView
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

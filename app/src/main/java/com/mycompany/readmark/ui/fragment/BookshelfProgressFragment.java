@@ -1,9 +1,10 @@
-package com.mycompany.readmark.holder;
+package com.mycompany.readmark.ui.fragment;
 
-import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,20 +17,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycompany.readmark.R;
+import com.mycompany.readmark.api.presenter.impl.BookshelfPresenterImpl;
+import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.table.Bookshelf;
+import com.mycompany.readmark.holder.WaveLoadingViewHolder;
 import com.mycompany.readmark.ui.widget.WaveLoadingView;
 
 /**
  * Created by Lenovo.
  */
 
-public class WaveLoadingViewHolder {
+public class BookshelfProgressFragment extends BaseFragment implements IBookListView {
+
     private Bookshelf mBookshelf;
-    private Context mContext;
-    private ViewGroup mViewGroup;
-
-
-    private View mContentView;
+    private BookshelfPresenterImpl mBookshelfPresenterImpl;
     private WaveLoadingView mWaveLoadingView;
     private SeekBar mRedPicker;
     private SeekBar mGreenPicker;
@@ -50,38 +51,56 @@ public class WaveLoadingViewHolder {
 
     private boolean isDateQualified = true;
 
-    public WaveLoadingViewHolder(Context context, Bookshelf bookshelf, ViewGroup container) {
-        mViewGroup = container;
-        mBookshelf = bookshelf;
-        mContext = context;
-        mRed = mBookshelf.getRed();
-        mGreen = mBookshelf.getGreen();
-        mBlue = mBookshelf.getBlue();
-        mColor = mBookshelf.getColor();
 
-        initViews();
-        initEvents();
+    public void setOnProgressConfirmedlistener(OnProgressConfirmedListener listener){
+
     }
 
-    private void initViews(){
-        mContentView = LayoutInflater.from(mContext)
-                .inflate(R.layout.item_wave_loading_view, mViewGroup, false);
-        mWaveLoadingView = (WaveLoadingView) mContentView.findViewById(R.id.wave_loading_view);
+
+    public static BookshelfProgressFragment newInstance(Bookshelf bookshelf) {
+        Bundle args = new Bundle();
+        args.putSerializable("progress", bookshelf);
+        BookshelfProgressFragment fragment = new BookshelfProgressFragment();
+        fragment.setArguments(args);
+        return fragment;
+
+    }
+
+
+    @Override
+    protected void initRootView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        /*WaveLoadingViewHolder holder =
+                new WaveLoadingViewHolder(getActivity()
+                        , (Bookshelf) getArguments().getSerializable("progress")
+                        , container);*/
+
+
+        mRootView = LayoutInflater.from(getActivity())
+                .inflate(R.layout.item_wave_loading_view, container, false);
+
+
+    }
+
+    @Override
+    protected void initEvents() {
+        mBookshelf = (Bookshelf) getArguments().getSerializable("progress");
+        mBookshelfPresenterImpl = new BookshelfPresenterImpl(this);
+        mWaveLoadingView = (WaveLoadingView) mRootView.findViewById(R.id.wave_loading_view);
         mWaveLoadingView.post(new Runnable() {
             @Override
             public void run() {
                 mWaveLoadingView.setWaveColor(mBookshelf.getColor());
             }
         });
-        mRedPicker = (SeekBar) mContentView.findViewById(R.id.red_picker);
-        mGreenPicker = (SeekBar) mContentView.findViewById(R.id.green_picker);
-        mBluePicker = (SeekBar) mContentView.findViewById(R.id.blue_picker);
-        mAmpPicker = (SeekBar) mContentView.findViewById(R.id.amp_picker);
-        mWavePicker = (SeekBar) mContentView.findViewById(R.id.wave_picker);
-        mCurrentPage = (EditText) mContentView.findViewById(R.id.edit_current_page);
-        mTotalPages = (TextView) mContentView.findViewById(R.id.text_total_page);
-        mConfirmButton = (Button) mContentView.findViewById(R.id.button_confirm);
-        mCancelButton = (Button) mContentView.findViewById(R.id.button_cancel);
+        mRedPicker = (SeekBar) mRootView.findViewById(R.id.red_picker);
+        mGreenPicker = (SeekBar) mRootView.findViewById(R.id.green_picker);
+        mBluePicker = (SeekBar) mRootView.findViewById(R.id.blue_picker);
+        mAmpPicker = (SeekBar) mRootView.findViewById(R.id.amp_picker);
+        mWavePicker = (SeekBar) mRootView.findViewById(R.id.wave_picker);
+        mCurrentPage = (EditText) mRootView.findViewById(R.id.edit_current_page);
+        mTotalPages = (TextView) mRootView.findViewById(R.id.text_total_page);
+        mConfirmButton = (Button) mRootView.findViewById(R.id.button_confirm);
+        mCancelButton = (Button) mRootView.findViewById(R.id.button_cancel);
 
 
         mRedPicker.post(new Runnable() {
@@ -132,9 +151,7 @@ public class WaveLoadingViewHolder {
         mWaveLoadingView.setTitletext(((int)(mBookshelf.getProgress() * 100)) + "" + " %");
 
 
-    }
 
-    private void initEvents(){
         mRedPicker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -296,7 +313,7 @@ public class WaveLoadingViewHolder {
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mBookshelfPresenterImpl.updateBookshelf(mBookshelf);
             }
         });
 
@@ -307,21 +324,50 @@ public class WaveLoadingViewHolder {
 
             }
         });
+
     }
 
-    public View getContentView() {
-        return mContentView;
+    @Override
+    protected void initData(boolean isSavedNull) {
+
     }
 
-    public boolean isDateQualified() {
-        return isDateQualified;
+
+    /*
+    *
+    *
+    * */
+    @Override
+    public void showMessage(String msg) {
+        if(isDateQualified){
+            Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getActivity(), "数据格式错误", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showProgress() {
+
+    }
+
+    @Override
+    public void hideProgress() {
+
+    }
+
+    @Override
+    public void refreshData(Object result) {
+
+    }
+
+    @Override
+    public void addData(Object result) {
+
     }
 
 
     public interface OnProgressConfirmedListener{
         void onProgressConfirmed(Bookshelf bookshelf, boolean isQualified);
     }
-
-
-
 }

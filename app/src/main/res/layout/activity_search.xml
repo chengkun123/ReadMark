@@ -11,14 +11,14 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorPrimary"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
@@ -28,7 +28,7 @@
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/myBackground"
+        android:background="@color/skin_bg_color"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <!--
@@ -37,7 +37,7 @@
         <com.mycompany.readmark.ui.widget.FlowLayout
             android:id="@+id/flow_layout"
             android:padding="20dp"
-            android:background="?attr/myBackground"
+            android:background="@color/skin_bg_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
