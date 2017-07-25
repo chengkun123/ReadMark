@@ -37,8 +37,8 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
     private static final int count = 20;
     private static int page = 0;
 
-    @BindView(R.id.swipe_refresh_widget)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    /*@BindView(R.id.swipe_refresh_widget)
+    SwipeRefreshLayout mSwipeRefreshLayout;*/
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
@@ -70,9 +70,9 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
         q = getIntent().getStringExtra("q");
         setTitle(q);
         mBookListPresenter = new BookListPresenterImpl(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1, R.color.recycler_color2,
+        /*mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1, R.color.recycler_color2,
                 R.color.recycler_color3, R.color.recycler_color4);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(this);*/
 
         mLayoutManager = new GridLayoutManager(this, 1);
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -120,32 +120,32 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
         if(msg != null){
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
-        mSwipeRefreshLayout.setRefreshing(false);
+        //mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void showProgress() {
-        if(!mSwipeRefreshLayout.isRefreshing()){
+        /*if(!mSwipeRefreshLayout.isRefreshing()){
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(true);
                 }
             });
-        }
+        }*/
 
     }
 
     @Override
     public void hideProgress() {
-        if(mSwipeRefreshLayout.isRefreshing()){
+        /*if(mSwipeRefreshLayout.isRefreshing()){
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             });
-        }
+        }*/
     }
 
     /**
@@ -160,7 +160,7 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
             mBookListAdapter.notifyDataSetChanged();
             page++;
         }
-        mSwipeRefreshLayout.setRefreshing(false);
+        //mSwipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -174,15 +174,17 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
             mBookListAdapter.notifyDataSetChanged();
             page++;
         }
-        mSwipeRefreshLayout.setRefreshing(false);
+        //mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onRefresh() {
-        if(!mSwipeRefreshLayout.isRefreshing()){
+        /*if(!mSwipeRefreshLayout.isRefreshing()){
             mBookListPresenter.loadBooks(q, null, 0, count, fields);
             page = 1;
-        }
+        }*/
+        mBookListPresenter.loadBooks(q, null, 0, count, fields);
+        page = 1;
     }
 
 

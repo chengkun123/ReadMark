@@ -55,4 +55,21 @@
         <attr name="position"/>
     </declare-styleable>
 
+
+    <!-- 轮播相关-->
+    <declare-styleable name="BannerView">
+        <attr name="dotFocusDrawable" format="color|reference"/>
+        <attr name="dotNormalDrawable" format="color|reference"/>
+        <attr name="dotSize" format="dimension"/>
+        <attr name="dotDistance" format="dimension"/>
+        <attr name="dotLocation" format="enum">
+            <enum name="center" value="0"/>
+            <enum name="right" value="1"/>
+            <enum name="left" value="-1"/>
+        </attr>
+        <attr name="bottomColor" format="color"/>
+        <attr name="descColor" format="color"/>
+        <attr name="widthProportion" format="float"/>
+        <attr name="heightProportion" format="float"/>
+    </declare-styleable>
 </resources>

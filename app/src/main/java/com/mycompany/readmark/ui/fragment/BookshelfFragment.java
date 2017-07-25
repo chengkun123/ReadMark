@@ -42,8 +42,8 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
     Toolbar mToolbar;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.swipe_refresh_widget)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    /*@BindView(R.id.swipe_refresh_widget)
+    SwipeRefreshLayout mSwipeRefreshLayout;*/
 
     private GridLayoutManager mLayoutManager;
     private BookshelfAdapter mBookshelfAdapter;
@@ -75,8 +75,8 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
         mBookshelfPresenter = new BookshelfPresenterImpl(this);
 
 
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1, R.color.recycler_color2,
-                R.color.recycler_color3, R.color.recycler_color4);
+        /*mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1, R.color.recycler_color2,
+                R.color.recycler_color3, R.color.recycler_color4);*/
 
         mLayoutManager = new GridLayoutManager(getActivity(), spanCount);
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -131,22 +131,22 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
 
     @Override
     public void showProgress() {
-        mSwipeRefreshLayout.post(new Runnable() {
+        /*mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
             }
-        });
+        });*/
     }
 
     @Override
     public void hideProgress() {
-        mSwipeRefreshLayout.post(new Runnable() {
+        /*mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
-        });
+        });*/
     }
 
     @Override

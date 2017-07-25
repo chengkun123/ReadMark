@@ -55,7 +55,7 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
         //1.创建View
         View view = createView(parent, name, context, attrs);
 
-        Log.e(TAG, view + "");
+        //Log.e(TAG, view + "");
 
         //2.解析属性 background textColor... 自定义
         if(view != null){

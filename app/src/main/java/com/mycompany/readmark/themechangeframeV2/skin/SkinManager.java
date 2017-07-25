@@ -103,8 +103,6 @@ public class SkinManager {
 
         changeSkin();
 
-
-
         //更换完之后保存皮肤的路径
         saveSkinStatus(path);
 

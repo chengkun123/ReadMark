@@ -1,0 +1,15 @@
+<com.mycompany.readmark.ui.widget.bannerview.BannerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/banner"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:dotSize="8dp"
+    app:dotDistance="8dp"
+    app:dotLocation="right"
+    app:dotFocusDrawable="@color/colorAccent"
+    app:dotNormalDrawable="@color/secondary_text"
+    app:descColor="@color/white"
+    app:bottomColor="@color/color8A9599"
+    >
+</com.mycompany.readmark.ui.widget.bannerview.BannerView>
