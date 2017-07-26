@@ -37,5 +37,10 @@ public abstract class LoadViewCreator {
     /**
      * 停止加载
      */
-    public abstract void onStopLoad();
+    public abstract void onStopLoading();
+
+    /**
+     * 恢复原始状态时
+     */
+    public abstract void onFinished();
 }

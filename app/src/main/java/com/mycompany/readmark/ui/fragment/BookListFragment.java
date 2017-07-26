@@ -3,14 +3,11 @@ package com.mycompany.readmark.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -24,18 +21,19 @@ import com.mycompany.readmark.bean.http.BookListResponse;
 import com.mycompany.readmark.ui.activity.BookDetailActivity;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
 import com.mycompany.readmark.ui.adapter.BookListAdapter2;
-import com.mycompany.readmark.ui.adapter.commen.DefaultLoadRefreshCreator;
-import com.mycompany.readmark.ui.adapter.commen.DefaultRefreshCreator;
+
+
 import com.mycompany.readmark.ui.adapter.commen.ItemClickListener;
 import com.mycompany.readmark.ui.adapter.commen.LoadRefreshRecyclerView;
+import com.mycompany.readmark.ui.adapter.commen.MTRefreshCreator;
 import com.mycompany.readmark.ui.adapter.commen.MultiTypeSupport;
 import com.mycompany.readmark.ui.adapter.commen.RefreshRecyclerView;
+import com.mycompany.readmark.ui.adapter.commen.SimpleLoadRefreshCreator;
+
 import com.mycompany.readmark.ui.adapter.commen.WrapRecyclerAdapter;
-import com.mycompany.readmark.ui.adapter.commen.WrapRecyclerView;
 import com.mycompany.readmark.ui.widget.bannerview.BannerDataAdapter;
 
 import com.mycompany.readmark.ui.widget.bannerview.BannerView;
-import com.mycompany.readmark.utils.commen.DensityUtils;
 import com.mycompany.readmark.utils.commen.UIUtils;
 
 
@@ -53,8 +51,7 @@ public class BookListFragment extends BaseFragment
 
     @BindView(R.id.recyclerView)
     LoadRefreshRecyclerView mRecyclerView;
-    /*@BindView(R.id.swipe_refresh_widget)
-    SwipeRefreshLayout mSwipeRefreshLayout;*/
+
 
     private String tag = "hot";
     //对返回信息做过滤,即只返回fields中的内容
@@ -123,25 +120,6 @@ public class BookListFragment extends BaseFragment
         bookListPresenter = new BookListPresenterImpl(this);
 
         bookInfoResponses = new ArrayList<>();
-        /*mSwipeRefreshLayout.setColorSchemeResources(R.color.recycler_color1, R.color.recycler_color2,
-                R.color.recycler_color3, R.color.recycler_color4);*/
-
-        /*//设置RecyclerView的Manager
-        mLayoutManager = new GridLayoutManager(getActivity(), spanCount);
-        //???
-        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return mListAdapter.getItemColumnSpan(position);
-            }
-        });
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-        //Adapter
-        mListAdapter = new BookListAdapter(getActivity(), bookInfoResponses, spanCount);
-        mRecyclerView.setAdapter(mListAdapter);*/
 
         /*
         * 新增
@@ -162,14 +140,16 @@ public class BookListFragment extends BaseFragment
                 return R.layout.item_book_list;
             }
         });
-        /*//包装支持头部和脚部
-        mAdapter = new WrapRecyclerAdapter(mListAdapter2);*/
+
         mRecyclerView.setAdapter(mListAdapter2);
 
-        //刷新头部
-        DefaultRefreshCreator refreshCreator = new DefaultRefreshCreator();
-        mRecyclerView.addRefreshViewCreator(refreshCreator);
+        MTRefreshCreator creator = new MTRefreshCreator(getActivity(), mRecyclerView);
+        mRecyclerView.addRefreshViewCreator(creator);
         mRecyclerView.setOnRefreshListener(this);
+        /*StickyRefreshCreator creator = new StickyRefreshCreator(getActivity(), mRecyclerView);
+        mRecyclerView.addRefreshViewCreator(creator);
+        mRecyclerView.setOnRefreshListener(this);*/
+
         //普通头部
         BannerView banner = (BannerView) LayoutInflater.from(getActivity())
                 .inflate(R.layout.just_a_banner_view, mRecyclerView, false);
@@ -182,15 +162,18 @@ public class BookListFragment extends BaseFragment
         banner.setAdapter(bannerDataAdapter);
         banner.startRoll();
         mRecyclerView.addHeaderView(banner);
-        /*//空白
-        View emptyView = LayoutInflater.from(getActivity())
-                .inflate(R.layout.item_empty, mRecyclerView, false);
-        mRecyclerView.addEmptyView(emptyView);*/
 
-        //刷新的尾部
+
+        SimpleLoadRefreshCreator creator1 = new SimpleLoadRefreshCreator(getActivity(), mRecyclerView);
+        mRecyclerView.addLoadViewCreator(creator1);
+        mRecyclerView.setOnLoadMoreListener(this);
+        /*//刷新的尾部
         DefaultLoadRefreshCreator defaultLoadRefreshCreator = new DefaultLoadRefreshCreator();
         mRecyclerView.addLoadViewCreator(defaultLoadRefreshCreator);
-        mRecyclerView.setOnLoadMoreListener(this);
+        mRecyclerView.setOnLoadMoreListener(this);*/
+        /*StickyLoadRefreshCreator creator1 = new StickyLoadRefreshCreator(getActivity(), mRecyclerView);
+        mRecyclerView.addLoadViewCreator(creator1);
+        mRecyclerView.setOnLoadMoreListener(this);*/
 
         //点击事件传出
         mListAdapter2.setItemClickListener(new ItemClickListener() {
@@ -207,15 +190,8 @@ public class BookListFragment extends BaseFragment
         //动画
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        bookListPresenter.loadBooks(null, tag, 0, count, fields);
 
-
-        //添加更多直接在RV内部处理，不需要在外部借助其他Listener
-        /*//监听滚动，主要和加载相关
-        mRecyclerView.addOnScrollListener(new RecyclerViewScrollDetector());*/
-
-
-
-        //mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     /**
@@ -244,6 +220,8 @@ public class BookListFragment extends BaseFragment
      */
     @Override
     public void showMessage(String msg) {
+        mRecyclerView.onStoppingRefresh();
+        mRecyclerView.onStoppingLoad();
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 
@@ -252,12 +230,7 @@ public class BookListFragment extends BaseFragment
      */
     @Override
     public void showProgress() {
-        /*mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });*/
+
     }
 
     /**
@@ -265,12 +238,7 @@ public class BookListFragment extends BaseFragment
      */
     @Override
     public void hideProgress() {
-        /*mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });*/
+
     }
 
     /**
@@ -282,13 +250,11 @@ public class BookListFragment extends BaseFragment
         if(result instanceof BookListResponse){
             bookInfoResponses.clear();
             bookInfoResponses.addAll(((BookListResponse) result).getBooks());
-            //mListAdapter.notifyDataSetChanged();
-            //mListAdapter2.notifyDataSetChanged();
-            //会调用WrapAdapter的notifyDataSetChanged()
+
             mListAdapter2.notifyDataSetChanged();
             page++;
-            mRecyclerView.onStopRefresh();
-            mRecyclerView.onStopLoad();
+            mRecyclerView.onStoppingRefresh();
+            mRecyclerView.onStoppingLoad();
         }
     }
 
@@ -300,29 +266,13 @@ public class BookListFragment extends BaseFragment
     public void addData(Object result) {
         final int start = bookInfoResponses.size();
         bookInfoResponses.addAll(((BookListResponse)result).getBooks());
-        //mListAdapter.notifyItemRangeInserted(start, bookInfoResponses.size());
-        //mListAdapter2.notifyDataSetChanged();
         mListAdapter2.notifyDataSetChanged();
         page++;
-        mRecyclerView.onStopRefresh();
-        mRecyclerView.onStopLoad();
+        mRecyclerView.onStoppingRefresh();
+        mRecyclerView.onStoppingLoad();
     }
 
-    /**
-     * 下拉刷新时，从头请求数据
-     */
-    /*@Override
-    public void onRefresh() {
-        bookListPresenter.loadBooks(null, tag, 0, count, fields);
-    }*/
 
-
-
-    /*public void onLoadMore(){
-        if(!mSwipeRefreshLayout.isRefreshing()){
-            bookListPresenter.loadBooks(null, tag, page * count, count, fields);
-        }
-    }*/
 
     @Override
     public void onRefresh() {
@@ -334,41 +284,4 @@ public class BookListFragment extends BaseFragment
         bookListPresenter.loadBooks(null, tag, page * count, count, fields);
     }
 
-    /**
-     * 用于监听RecyclerView的滑动
-     *
-     */
-    /*class RecyclerViewScrollDetector extends RecyclerView.OnScrollListener{
-        private int lastVisibleItem;
-        private int mScrollThreshold = DensityUtils.dp2px(getActivity(), 1);
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            //如果没在滑动 而且 在最底部
-            if(newState == RecyclerView.SCROLL_STATE_IDLE
-                    && *//*lastVisibleItem + 1 == mListAdapter.getItemCount()*//*
-                    lastVisibleItem + 1 == mAdapter.getItemCount()){
-                onLoadMore();
-            }
-        }
-
-
-        //控制Activity中的FloatingBar的显示与否
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            boolean isObviousDelta = Math.abs(dy) > mScrollThreshold;
-            if(isObviousDelta){
-                if(dy > 0){
-
-                }else{
-
-                }
-
-            }
-            //lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-            lastVisibleItem = mLayoutManager2.findLastVisibleItemPosition();
-        }
-    }*/
 }

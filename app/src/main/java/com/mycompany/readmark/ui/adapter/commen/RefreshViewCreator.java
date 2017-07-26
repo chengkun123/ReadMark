@@ -34,6 +34,10 @@ public abstract class RefreshViewCreator {
     /**
      * 停止刷新
      */
-    public abstract void onStopRefresh();
+    public abstract void onStoppingRefresh(int currentDragHeight, int refreshViewHeight);
 
+    /**
+     * 结束阶段
+     */
+    public abstract void onFinished();
 }

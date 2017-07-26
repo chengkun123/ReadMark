@@ -1,11 +1,12 @@
 package com.mycompany.readmark.ui.adapter.commen;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,8 +31,7 @@ public class RefreshRecyclerView extends WrapRecyclerView {
     protected float mDragIndex = 0.35f;
     // 当前是否正在拖动
     private boolean mCurrentDrag = false;
-    // 当前的状态
-    private int mCurrentRefreshStatus;
+
     // 默认状态
     public int REFRESH_STATUS_NORMAL = 0x0011;
     // 继续下拉以刷新状态
@@ -39,16 +39,27 @@ public class RefreshRecyclerView extends WrapRecyclerView {
     // 松开刷新状态
     public int REFRESH_STATUS_LOOSEN_REFRESHING = 0x0033;
     // 正在刷新状态
-    public int REFRESH_STATUS_REFRESHING = 0x0033;
+    public int REFRESH_STATUS_REFRESHING = 0x0044;
+    // 当前的状态
+    private int mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
+
 
 
     // 处理刷新回调监听
     private OnRefreshListener mListener;
+    private boolean isAutoScroll;
+    private boolean isAbleToPull;
+    private boolean isTmpFirstDown = true;
+
+    private boolean isRollingToRefreshing;
+    private boolean isRollingToFInished;
 
 
     public void setOnRefreshListener(OnRefreshListener listener) {
         this.mListener = listener;
     }
+
+
 
     public interface OnRefreshListener {
         void onRefresh();
@@ -110,12 +121,13 @@ public class RefreshRecyclerView extends WrapRecyclerView {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if(changed){
-            //如果有头部，则将它移出屏幕
+            Log.e(TAG, "onLayout");
+            //如果有RefreshView，则将它移出屏幕
             if(mRefreshView != null && mRefreshViewHeight <= 0){
                 mRefreshViewHeight = mRefreshView.getMeasuredHeight();
                 if(mRefreshViewHeight > 0){
-                    Log.e(TAG, "的确布局了");
-                    setRefreshViewMarginTop( -mRefreshViewHeight + 1);
+                    //Log.e(TAG, "的确布局了");
+                    setRefreshViewMarginTop( - mRefreshViewHeight + 1);
                 }
             }
         }
@@ -132,8 +144,10 @@ public class RefreshRecyclerView extends WrapRecyclerView {
             case MotionEvent.ACTION_UP:
                 //进行回弹
                 if(mCurrentDrag){
+
                     restoreRefreshView();
                 }
+                isTmpFirstDown = true;
                 break;
         }
 
@@ -143,49 +157,102 @@ public class RefreshRecyclerView extends WrapRecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        switch (e.getAction()){
-            case MotionEvent.ACTION_MOVE:
-                //如果还可以滑动,不处理
-                if(canScrollUp() || mCurrentRefreshStatus == REFRESH_STATUS_REFRESHING){
-                    return super.onTouchEvent(e);
-                }
-                // 解决下拉刷新自动滚动问题
-                if(mCurrentDrag){
-                    scrollToPosition(0);
-                }
+        //正在刷新或者正在回滚，不作为
+        if(mCurrentRefreshStatus == REFRESH_STATUS_REFRESHING || isAutoScroll){
+            //Log.e(TAG, "在刷新状态进入");
+            return true;
+        }else if(!canScrollUp()){/*!canScrollUp()*/
+            //直到能滑动的时候才记录按下点
+            if(isTmpFirstDown){
+                mFingerDownY = (int) e.getRawY();
+                isTmpFirstDown = false;
+            }
+            switch (e.getAction()){
+                /*case MotionEvent.ACTION_DOWN:
+                    mFingerDownY = (int) e.getRawY();
+                    break;*/
+                case MotionEvent.ACTION_MOVE:
+                    // 解决下拉刷新自动滚动问题
+                    /*if(mCurrentDrag){
+                        scrollToPosition(0);
+                    }*/
 
-                int distanceY = (int) ((e.getRawY() - mFingerDownY) * mDragIndex);
+                    //计算距离
+                    int distanceY = (int) ((e.getRawY() - mFingerDownY) * mDragIndex);
 
-                if(distanceY > 0){
-                    int marginTop = distanceY - mRefreshViewHeight;
-                    setRefreshViewMarginTop(marginTop);
-                    updateRefreshStatus(marginTop);
-                    mCurrentDrag = true;
-                    return false;
-                }
-                break;
 
+                    if(distanceY > 0){
+                        int marginTop = - mRefreshViewHeight + distanceY;
+                        //更新头部位置并更新状态
+                        setRefreshViewMarginTop(marginTop);
+                        //更新状态并回调
+                        updateRefreshStatus(marginTop);
+                        mCurrentDrag = true;
+                        return false;
+                    }
+                    break;
+            }
         }
-
+        //mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
         return super.onTouchEvent(e);
     }
 
-    private void updateRefreshStatus(int marginTop) {
-
-        //先更新状态
-        if(marginTop <= -mRefreshViewHeight){
-            mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
-
-        }else if(marginTop < 0){
-            mCurrentRefreshStatus = REFRESH_STATUS_PULL_DOWN_REFRESH;
+    /**
+     * 判断是否可以下滑
+     * @param event
+     * @return
+     */
+    private boolean isAbleToScroll(MotionEvent event) {
+        View firstNoRefreshChild = getChildAt(1);
+        if(firstNoRefreshChild != null){
+            if(firstNoRefreshChild.getTop() >= 0){
+                if(!isAbleToPull){
+                    mFingerDownY = (int) event.getRawY();
+                }
+                isAbleToPull = true;
+            }else{
+                isAbleToPull = false;
+            }
         }else{
-            mCurrentRefreshStatus = REFRESH_STATUS_LOOSEN_REFRESHING;
+            isAbleToPull = true;
         }
-        //然后交给mRefreshCreator去处理
-        if(mRefreshCreator != null){
-            mRefreshCreator.onPull(marginTop, mRefreshViewHeight, mCurrentRefreshStatus);
+        /*if(!canScrollUp()){
+            if(!isAbleToPull){
+                mFingerDownY = (int) event.getRawY();
+            }
+            isAbleToPull = true;
+        }else{
+            isAbleToPull = false;
         }
+        //Log.e("能否滑动",!canScrollUp()+"");*/
 
+        return isAbleToPull;
+    }
+
+    /**
+     * 更新状态
+     * @param marginTop
+     */
+    private void updateRefreshStatus(int marginTop) {
+        if(marginTop <= - mRefreshViewHeight + 1){
+
+            mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
+            if(mRefreshCreator != null){
+                mRefreshCreator.onFinished();
+            }
+        }else if(marginTop < 0){
+
+            mCurrentRefreshStatus = REFRESH_STATUS_PULL_DOWN_REFRESH;
+            if(mRefreshCreator != null){
+                mRefreshCreator.onPull(mRefreshViewHeight + marginTop, mRefreshViewHeight, mCurrentRefreshStatus);
+            }
+        }else{
+
+            mCurrentRefreshStatus = REFRESH_STATUS_LOOSEN_REFRESHING;
+            if(mRefreshCreator != null){
+                mRefreshCreator.onPull(mRefreshViewHeight + marginTop, mRefreshViewHeight, mCurrentRefreshStatus);
+            }
+        }
     }
 
     public boolean canScrollUp() {
@@ -201,18 +268,12 @@ public class RefreshRecyclerView extends WrapRecyclerView {
      */
     private void restoreRefreshView() {
         int currentTopMargin = ((MarginLayoutParams)(mRefreshView.getLayoutParams())).topMargin;
-        int finalTopMargin = -mRefreshViewHeight + 1;
+        int finalTopMargin = - mRefreshViewHeight + 1;
 
-        //如果此时是松开可刷新状态,refreshView回到0
+        //如果此时是松开可刷新状态
         if(mCurrentRefreshStatus == REFRESH_STATUS_LOOSEN_REFRESHING){
+            isRollingToRefreshing = true;
             finalTopMargin = 0;
-            mCurrentRefreshStatus = REFRESH_STATUS_REFRESHING;
-            if(mRefreshCreator != null){
-                mRefreshCreator.onRefreshing();
-            }
-            if(mListener != null){
-                mListener.onRefresh();
-            }
         }
 
         int distance = currentTopMargin - finalTopMargin;
@@ -225,6 +286,39 @@ public class RefreshRecyclerView extends WrapRecyclerView {
             public void onAnimationUpdate(ValueAnimator animation) {
                 float currentTopMargin = (float) animation.getAnimatedValue();
                 setRefreshViewMarginTop((int)currentTopMargin);
+                //如果是回滚到初始状态
+                if(isRollingToFInished){
+                    if (mRefreshCreator != null) {
+                        mRefreshCreator.onStoppingRefresh((int) (mRefreshViewHeight + currentTopMargin), mRefreshViewHeight);
+                    }
+                }
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                isAutoScroll = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                isAutoScroll = false;
+                if(isRollingToRefreshing){
+                    mCurrentRefreshStatus = REFRESH_STATUS_REFRESHING;
+                    isRollingToRefreshing = false;
+                    if(mRefreshCreator != null){
+                        mRefreshCreator.onRefreshing();
+                    }
+                    if(mListener != null){
+                        mListener.onRefresh();
+                    }
+                } else if(isRollingToFInished){
+                    mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
+                    isRollingToFInished = false;
+                    mRefreshCreator.onFinished();
+                }
             }
         });
         animator.start();
@@ -237,8 +331,8 @@ public class RefreshRecyclerView extends WrapRecyclerView {
      */
     private void setRefreshViewMarginTop(int currentTopMargin) {
         MarginLayoutParams params = (MarginLayoutParams) mRefreshView.getLayoutParams();
-        if(currentTopMargin < -mRefreshViewHeight + 1){
-            currentTopMargin = -mRefreshViewHeight + 1;
+        if(currentTopMargin <= - mRefreshViewHeight + 1){
+            currentTopMargin = - mRefreshViewHeight + 1;
         }
 
         params.topMargin = currentTopMargin;
@@ -249,13 +343,10 @@ public class RefreshRecyclerView extends WrapRecyclerView {
     /**
      * 停止刷新
      */
-    public void onStopRefresh() {
+    public void onStoppingRefresh() {
         if(mCurrentRefreshStatus == REFRESH_STATUS_REFRESHING){
-            mCurrentRefreshStatus = REFRESH_STATUS_NORMAL;
+            isRollingToFInished = true;
             restoreRefreshView();
-            if (mRefreshCreator != null) {
-                mRefreshCreator.onStopRefresh();
-            }
         }
     }
 }

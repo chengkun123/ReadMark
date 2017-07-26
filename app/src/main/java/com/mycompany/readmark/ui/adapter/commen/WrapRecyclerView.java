@@ -175,9 +175,9 @@ public class WrapRecyclerView extends RecyclerView {
      */
     private void dataChanged() {
         if(mSrcAdapter.getItemCount() == 0){
-            if(mEmptyView != null){
+            /*if(mEmptyView != null){
                 mEmptyView.setVisibility(VISIBLE);
-            }
+            }*/
             if(mWrapAdapter.getFooters().size() > 0){
                 for(View view : mWrapAdapter.getFooters()){
                     view.setVisibility(INVISIBLE);
@@ -189,9 +189,9 @@ public class WrapRecyclerView extends RecyclerView {
                 }
             }*/
         }else{
-            if(mEmptyView != null){
+            /*if(mEmptyView != null){
                 mEmptyView.setVisibility(INVISIBLE);
-            }
+            }*/
             if(mWrapAdapter.getFooters().size() > 0){
                 for(View view : mWrapAdapter.getFooters()){
                     view.setVisibility(VISIBLE);
