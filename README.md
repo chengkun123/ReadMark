@@ -28,9 +28,9 @@
 
 
 
-![6](https://github.com/chengkun123/ReadMark/blob/master/ScreenShots/skinchange13.gif?raw=true)
-
 ![7](https://github.com/chengkun123/ReadMark/blob/master/ScreenShots/skinchange14.gif?raw=true)
+
+
 
 
 
@@ -42,3 +42,6 @@
 
 
 
+![100](http://img.blog.csdn.net/20170805175248263)
+
+![101](http://img.blog.csdn.net/20170805175310448)
