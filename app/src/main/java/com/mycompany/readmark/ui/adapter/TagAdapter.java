@@ -81,6 +81,7 @@ public class TagAdapter<T> extends BaseAdapter implements FlowLayout.OnTagMovedL
     }
 
     public void onTagMoved(int fromPos, int toPos, boolean isMoving){
+        //改变数据集
         T t = mDataList.get(fromPos);
         mDataList.remove(fromPos);
         mDataList.add(toPos, t);

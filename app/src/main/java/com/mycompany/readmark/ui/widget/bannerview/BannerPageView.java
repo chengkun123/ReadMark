@@ -146,14 +146,14 @@ public class BannerPageView extends ViewPager {
     * */
     @Override
     protected void onDetachedFromWindow() {
-        Log.e(TAG, "onDetachedFromWindow");
+        /*Log.e(TAG, "onDetachedFromWindow");
         if(mHandler != null){
             mHandler.removeMessages(SCROLL_MSG);
             mHandler = null;
         }
         if(mActivity != null){
             mActivity.getApplication().unregisterActivityLifecycleCallbacks(mActivityCallbacks);
-        }
+        }*/
         super.onDetachedFromWindow();
     }
 

@@ -2,8 +2,10 @@ package com.mycompany.readmark.themechangeframeV2.skin.attr;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 
 import com.mycompany.readmark.themechangeframeV2.skin.SkinManager;
 import com.mycompany.readmark.themechangeframeV2.skin.SkinResource;
+import com.mycompany.readmark.ui.widget.bannerview.BannerView;
+import com.mycompany.readmark.ui.widget.floatingactionbutton.MultiFloatingActionButton;
 
 
 /**
@@ -69,7 +73,7 @@ public enum SkinType {
     }, CARDBACKGROUNDCOLOR("cardBackgroundColor") {
         @Override
         public void skin(View view, String resName) {
-            Log.e("CardView", "成功切换");
+            //Log.e("CardView", "成功切换");
             SkinResource resource = getSkinResource();
             //如果是颜色
             ColorStateList color = resource.getColorByName(resName);
@@ -81,12 +85,62 @@ public enum SkinType {
     }, TABTEXTCOLOR("tabTextColor") {
         @Override
         public void skin(View view, String resName) {
-            Log.e("TabView", "成功切换");
+            //Log.e("TabView", "成功切换");
             SkinResource resource = getSkinResource();
             //如果是颜色
             ColorStateList color = resource.getColorByName(resName);
             if(color != null){
                 ((TabLayout)view).setTabTextColors(color);
+                return;
+            }
+        }
+    }, BANNERDOTFOCUSCOLOR("dotFocusDrawable"){
+        @Override
+        public void skin(View view, String resName) {
+            SkinResource resource = getSkinResource();
+            ColorStateList colorStateList = resource.getColorByName(resName);
+            if(colorStateList != null){
+                ((BannerView)view).setBannerDotColor(colorStateList);
+                return;
+            }
+        }
+    }, FABCOLOR("switchFabColor"){
+        @Override
+        public void skin(View view, String resName) {
+            SkinResource resource = getSkinResource();
+            ColorStateList colorStateList = resource.getColorByName(resName);
+            if(colorStateList != null){
+                ((MultiFloatingActionButton)view).setSwitchFabColor(colorStateList);
+                return;
+            }
+        }
+    }, ADDFABCOLOR("backgroundTint"){
+        @Override
+        public void skin(View view, String resName) {
+            SkinResource resource = getSkinResource();
+            ColorStateList colorStateList = resource.getColorByName(resName);
+            if(colorStateList != null){
+                ((FloatingActionButton)view).setBackgroundTintList(colorStateList);
+                return;
+            }
+        }
+    }, SWITCHCOMPATTRACECOLOR("trackTint"){
+        @Override
+        public void skin(View view, String resName) {
+            SkinResource resource = getSkinResource();
+            ColorStateList colorStateList = resource.getColorByName(resName);
+            if(colorStateList != null){
+                ((SwitchCompat)view).setTrackTintList(colorStateList);
+                return;
+            }
+        }
+    }, SWITCHCOMPATTHUMBCOLOR("thumbTint"){
+        @Override
+        public void skin(View view, String resName) {
+            SkinResource resource = getSkinResource();
+            ColorStateList colorStateList = resource.getColorByName(resName);
+            if(colorStateList != null){
+                ((SwitchCompat)view).setThumbTintList(colorStateList);
                 return;
             }
         }

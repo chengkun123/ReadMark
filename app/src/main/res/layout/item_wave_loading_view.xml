@@ -38,10 +38,12 @@
         <LinearLayout
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
-                    android:text="red"
+
+                    android:text="红："
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <SeekBar
@@ -52,10 +54,11 @@
         <LinearLayout
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
-                    android:text="green"
+                    android:text="绿："
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <SeekBar
@@ -67,10 +70,11 @@
         <LinearLayout
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
-                    android:text="blue"
+                    android:text="蓝："
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <SeekBar
@@ -81,10 +85,11 @@
         <LinearLayout
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
                 <TextView
-                    android:text="amp"
+                    android:text="振幅："
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <SeekBar
@@ -97,12 +102,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="wave"/>
+                    android:text="波长："/>
 
                 <SeekBar
                     android:id="@+id/wave_picker"
@@ -120,10 +126,6 @@
                     android:id="@+id/button_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                <Button
-                    android:id="@+id/button_cancel"
-                    android:text="取消"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+
         </LinearLayout>
 </LinearLayout>

@@ -81,7 +81,7 @@ public class WaveLoadingViewHolder {
         mCurrentPage = (EditText) mContentView.findViewById(R.id.edit_current_page);
         mTotalPages = (TextView) mContentView.findViewById(R.id.text_total_page);
         mConfirmButton = (Button) mContentView.findViewById(R.id.button_confirm);
-        mCancelButton = (Button) mContentView.findViewById(R.id.button_cancel);
+        //mCancelButton = (Button) mContentView.findViewById(R.id.button_cancel);
 
 
         mRedPicker.post(new Runnable() {

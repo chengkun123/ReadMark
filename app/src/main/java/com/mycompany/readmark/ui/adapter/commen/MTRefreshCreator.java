@@ -37,6 +37,7 @@ public class MTRefreshCreator extends RefreshViewCreator{
         mHeaderText = (TextView) mHeader.findViewById(R.id.tv_pull_to_refresh);
         mSecondStepView.setBackgroundResource(R.drawable.mt_pull_to_refresh_second_anim_in);
         mThirdStepView.setBackgroundResource(R.drawable.mt_pull_to_refresh_third_anim);
+        //获取补间动画
         mSecondAnimIn = (AnimationDrawable) mSecondStepView.getBackground();
         mThirdAnim = (AnimationDrawable) mThirdStepView.getBackground();
     }

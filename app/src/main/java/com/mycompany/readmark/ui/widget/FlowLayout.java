@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.AttributeSet;
@@ -35,8 +36,8 @@ import java.util.List;
  * Created by Lenovo.
  */
 public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
-    private float mWindowX;
-    private float mWindowY;
+    private float mWindowXDown;
+    private float mWindowYDown;
     private float mXInParent;
     private float mYInParent;
     private int mFirstTouchPosition = -1;
@@ -58,7 +59,7 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
     private List<Integer> mLineHeight = new ArrayList<>();
     private AdapterDataSetObserver mDataSetObserver;
     private TagAdapter<String> mAdapter;
-    private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();;
+    private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();
     private OnTagLongClickListener mOnTagLongClickListener;
     private OnTagClickListener mOnTagClickListener;
 
@@ -144,18 +145,18 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
         for(int i=0; i<count; i++){
 
             View child = getChildAt(i);
-            //由于自View是TextView（TextView重写了onMeasure支持自己的wrap_content），测量后可以得到正确的测量值
+            //先把测量分发下去
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
             MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
             //获取TextView的测量值
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
 
-            //计算添加此child后的行宽。
+            //计算添加此child后的行宽，考虑子View的margin
             int tempWidth = lineWidth +  lp.leftMargin + childWidth + lp.rightMargin;
 
             //如果需要换行，注意要减去padding
-            if (tempWidth > sizeWidth - paddingLeft -paddingRight){
+            if (tempWidth > sizeWidth - paddingLeft - paddingRight){
                 //更新最终宽高
                 width = Math.max(lineWidth, width);
                 height += lineHeight;
@@ -274,7 +275,7 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
         }
     }
 
-    //与当前ViewGroup对应的LayoutParams为MarginLayoutParams
+    //子View获取的LayoutParams
     @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new MarginLayoutParams(getContext(), attrs);
@@ -326,19 +327,16 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
         * removeAllViewsInLayout();
         * requestLayout();
         * invalidate(true);
-        *
         * */
         removeAllViews();
-
-
         for(int i=0; i<mAdapter.getCount(); i++){
             final int j = i;
             // 注意最后一个参数传入FlowLayout
             final View child = mAdapter.getView(j, null, this);
             //重置点击状态为false
             mCheckedTagArray.put(i, false);
-            child.setOnLongClickListener(this);
             addView(child);
+            child.setOnLongClickListener(this);
             //长按和点击事件
             child.setOnClickListener(new OnClickListener() {
                 @Override
@@ -346,7 +344,7 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
                     mOnTagClickListener.onTagClick((String) mAdapter.getItem(j));
                 }
             });
-        }// end for
+        }
 
     }
 
@@ -357,8 +355,8 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
     public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
-                mWindowX = ev.getRawX();
-                mWindowY = ev.getRawY();
+                mWindowXDown = ev.getRawX();
+                mWindowYDown = ev.getRawY();
                 mXInParent = ev.getX();
                 mYInParent = ev.getY();
                 mFirstTouchPosition = pointToPosition(mXInParent, mYInParent);
@@ -386,8 +384,10 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
                 intercepted = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                //当开始Move的时候，事件交由FlowLayout处理
-                intercepted = true;
+                //当开始Move的时候，如果是Drag模式事件交由FlowLayout处理
+                if(mMode == MODE_DRAG){
+                    intercepted = true;
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 //getParent().requestDisallowInterceptTouchEvent(true);
@@ -411,27 +411,38 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
                 if(mMode == MODE_DRAG){
                     float wx = event.getRawX() - mRelativeX;
                     float wy = event.getRawY() - mRelativeY;
-                    //移动Window
-                    if(mWindowLayoutParams != null){
-                        mWindowLayoutParams.x = (int)wx;
-                        mWindowLayoutParams.y = (int)wy;
-                        mWindowManager.updateViewLayout(mDragView, mWindowLayoutParams);
-                    }
 
+                    /*
+                    * event在FlowLayout中的坐标
+                    * */
                     float xInparent = event.getX();
                     float yInparent = event.getY();
 
+                    /*
+                    * 查找hit的子View
+                    * */
                     int dropPos = pointToPosition(xInparent, yInparent);
+
+                    //移动Window
+                    if(mWindowLayoutParams != null){
+
+                        mWindowLayoutParams.x = (int)wx;
+                        mWindowLayoutParams.y = (int)wy;
+                        //改变Window的位置
+                        mWindowManager.updateViewLayout(mDragView, mWindowLayoutParams);
+                    }
 
                     if(dropPos == mOldPosition || dropPos == -1){
                         break;
                     }
+
+                    //移动其他标签
                     startMove(dropPos);
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if(mMode == MODE_DRAG){
-                    //需要进行WindowManager的释放
+                    //移除mDragView
                     if(mDragView != null){
                         mWindowManager.removeView(mDragView);
                         mDragView = null;
@@ -447,7 +458,8 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
 
                 break;
         }
-        return super.onTouchEvent(event);
+        /*return super.onTouchEvent(event);*/
+        return true;
     }
 
     /*
@@ -552,6 +564,7 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
         return -1;
     }
 
+
     @Override
     public boolean onLongClick(View v) {
         int position = pointToPosition(mXInParent, mYInParent);
@@ -562,22 +575,28 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
         * 长按Tag后开始处理拖拽
         * */
     private boolean afterLongClick(View v, int pos){
-        if(mMode == MODE_DRAG || pos == -1){
+        /*if(mMode == MODE_DRAG || pos == -1){
             return false;
-        }
+        }*/
         mOldView = v;
         mOldView.setVisibility(INVISIBLE);
         //Log.e("oldView的状态", ""+ mOldView.getVisibility());
         mOldPosition = pos;
         mTempPosition = pos;
-        mRelativeX = mWindowX - v.getLeft() - this.getLeft();
-        mRelativeY = mWindowY - v.getTop() - this.getTop();
+
+        //计算按下点和所属View边缘的偏差（在window中的偏差）
+        Rect rect = new Rect();
+        v.getGlobalVisibleRect(rect);
+
+        mRelativeX = mWindowXDown - rect.left;
+        mRelativeY = mWindowYDown - rect.top;
 
         if(Build.VERSION.SDK_INT >= 23){
             if(Settings.canDrawOverlays(getContext())){
                 initWindow();
             }else{
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + getContext().getPackageName()));
                 getContext().startActivity(intent);
             }
         }else{
@@ -603,12 +622,27 @@ public class FlowLayout extends ViewGroup implements View.OnLongClickListener{
             mWindowLayoutParams.width = mOldView.getWidth();
             mWindowLayoutParams.height = mOldView.getHeight();
 
-            mWindowLayoutParams.x = mOldView.getLeft() + this.getLeft();
-            mWindowLayoutParams.y = mOldView.getTop() + this.getTop();
+            //这里的坐标取值还是有点问题
+            //暂时没有发现问题所在
+            Rect rect = new Rect();
+
+            mOldView.getGlobalVisibleRect(rect);
+            mWindowLayoutParams.x = rect.left;
+            mWindowLayoutParams.y = rect.top;
+
+            /*int[] co = new int[2];
+            mOldView.getLocationInWindow(co);
+            mWindowLayoutParams.x = co[0];
+            mWindowLayoutParams.y = co[1];*/
+
+            /*mWindowLayoutParams.x = mOldView.getLeft() + this.getLeft();
+            mWindowLayoutParams.y = mOldView.getTop() + this.getTop();*/
+
             //系统Window无需Activity的Context
             mWindowLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
             mWindowLayoutParams.format = PixelFormat.RGBA_8888;
             mWindowLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+
             //window外的touch事件交给下层window处理，window内的自身处理。
             //本身不聚焦，将touch事件交给下层window处理。
             mWindowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL

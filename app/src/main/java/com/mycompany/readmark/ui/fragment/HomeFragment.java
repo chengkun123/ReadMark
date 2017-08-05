@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 
 
 import com.mycompany.readmark.R;
+import com.mycompany.readmark.themechangeframeV2.skin.SkinManager;
+import com.mycompany.readmark.themechangeframeV2.skin.callback.ISkinChangeListener;
 import com.mycompany.readmark.ui.activity.MainActivity;
 import com.mycompany.readmark.ui.activity.SearchActivity;
 import com.mycompany.readmark.ui.widget.floatingactionbutton.MultiFloatingActionButton;
@@ -93,6 +95,9 @@ public class HomeFragment extends BaseFragment{
     @Override
     public void onDestroyView() {
         if(mRootView != null){
+            /*SkinManager
+                    .getInstance()
+                    .clearRegisteredDetachedView((ISkinChangeListener) getActivity());*/
             //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();

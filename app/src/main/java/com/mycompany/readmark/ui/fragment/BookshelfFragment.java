@@ -18,6 +18,8 @@ import com.mycompany.readmark.R;
 import com.mycompany.readmark.api.presenter.impl.BookshelfPresenterImpl;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.table.Bookshelf;
+import com.mycompany.readmark.themechangeframeV2.skin.SkinManager;
+import com.mycompany.readmark.themechangeframeV2.skin.callback.ISkinChangeListener;
 import com.mycompany.readmark.ui.activity.MainActivity;
 import com.mycompany.readmark.ui.adapter.BookshelfAdapter;
 import com.mycompany.readmark.ui.widget.recyclerviewdecoration.StaggeredGridDecoration;
@@ -112,6 +114,9 @@ public class BookshelfFragment extends BaseFragment implements IBookListView
     @Override
     public void onDestroyView() {
         if(mRootView != null){
+            /*SkinManager
+                    .getInstance()
+                    .clearRegisteredDetachedView((ISkinChangeListener) getActivity());*/
             //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();

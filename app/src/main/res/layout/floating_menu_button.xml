@@ -5,8 +5,9 @@
     android:id="@+id/floating_button"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:switchFabColor="#DB4537"
+    app:switchFabColor="@color/colorAccent"
     app:switchFabIcon="@mipmap/ic_add_white_48dp"
+    app:layout_behavior="com.mycompany.readmark.ui.widget.floatingactionbutton.HideBehavior"
     app:animationMode="scale">
     <!-- app:layout_behavior="com.fjl.floatbutton.widget.FabBehavior"
     -->

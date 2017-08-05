@@ -121,7 +121,7 @@ public class RefreshRecyclerView extends WrapRecyclerView {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if(changed){
-            Log.e(TAG, "onLayout");
+            //Log.e(TAG, "onLayout");
             //如果有RefreshView，则将它移出屏幕
             if(mRefreshView != null && mRefreshViewHeight <= 0){
                 mRefreshViewHeight = mRefreshView.getMeasuredHeight();
@@ -168,9 +168,7 @@ public class RefreshRecyclerView extends WrapRecyclerView {
                 isTmpFirstDown = false;
             }
             switch (e.getAction()){
-                /*case MotionEvent.ACTION_DOWN:
-                    mFingerDownY = (int) e.getRawY();
-                    break;*/
+
                 case MotionEvent.ACTION_MOVE:
                     // 解决下拉刷新自动滚动问题
                     /*if(mCurrentDrag){

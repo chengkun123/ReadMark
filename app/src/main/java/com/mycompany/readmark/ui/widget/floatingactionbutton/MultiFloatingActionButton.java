@@ -385,7 +385,7 @@ public class MultiFloatingActionButton extends ViewGroup {
         mAnimationDuration = duration;
     }
 
-    public void setFabColor(ColorStateList color){
+    public void setSwitchFabColor(ColorStateList color){
         mFloatingActionButton.setBackgroundTintList(color);
     }
 

@@ -143,4 +143,10 @@ public abstract class BaseSkinActivity extends BaseActivity implements LayoutInf
         SkinManager.getInstance().unregister(this);
         super.onDestroy();
     }
+
+    public void recycleSkin() {
+        Log.e("recycleSkin", "调用了");
+
+        //SkinManager.getInstance().clearRegisteredDetachedView(this);
+    }
 }

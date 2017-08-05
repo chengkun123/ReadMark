@@ -44,19 +44,25 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
 
     public MyViewHolder setText(int viewId, CharSequence text){
         TextView tv = getView(viewId);
-        tv.setText(text);
+        if(tv != null){
+            tv.setText(text);
+        }
         return this;
     }
 
     public MyViewHolder setRating(int viewId, float rating){
         AppCompatRatingBar rb = getView(viewId);
-        rb.setRating(rating);
+        if(rb != null){
+            rb.setRating(rating);
+        }
         return this;
     }
 
     public MyViewHolder setImageResource(int viewId, int resourceId){
         ImageView imageView = getView(viewId);
-        imageView.setImageResource(resourceId);
+        if(imageView != null){
+            imageView.setImageResource(resourceId);
+        }
         return this;
     }
 

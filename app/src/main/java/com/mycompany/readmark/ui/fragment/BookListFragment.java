@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ import com.mycompany.readmark.api.presenter.impl.BookListPresenterImpl;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.http.BookInfoResponse;
 import com.mycompany.readmark.bean.http.BookListResponse;
+import com.mycompany.readmark.themechangeframeV2.skin.SkinManager;
+import com.mycompany.readmark.themechangeframeV2.skin.callback.ISkinChangeListener;
 import com.mycompany.readmark.ui.activity.BookDetailActivity;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
 import com.mycompany.readmark.ui.adapter.BookListAdapter2;
@@ -99,6 +103,10 @@ public class BookListFragment extends BaseFragment
     public void onDestroyView() {
         //在这里回调传回mRootView
         if(mRootView != null){
+            //当Fragment销毁的时候，SkinManager不应该持有Fragment的View了
+            /*SkinManager
+                    .getInstance()
+                    .clearRegisteredDetachedView((ISkinChangeListener) getActivity());*/
             //((MainActivity)getActivity()).clearThemeSetter(mRootView);
         }
         super.onDestroyView();
@@ -115,20 +123,12 @@ public class BookListFragment extends BaseFragment
 
     @Override
     protected void initEvents() {
-        int spanCount = getResources().getInteger(R.integer.home_span_count);
-        //创建Presenter并与之建立联系
+        //int spanCount = getResources().getInteger(R.integer.home_span_count);
+
         bookListPresenter = new BookListPresenterImpl(this);
-
         bookInfoResponses = new ArrayList<>();
-
-        /*
-        * 新增
-        * */
         mLayoutManager2 = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager2);
-        //不支持多布局时
-        //mListAdapter2 = new BookListAdapter2(getActivity(), bookInfoResponses, R.layout.item_book_list);
-
 
         //支持多布局时,传入根据item（一般有标记）返回不同布局id的策略（接口）
         mListAdapter2 = new BookListAdapter2(getActivity()
@@ -146,34 +146,29 @@ public class BookListFragment extends BaseFragment
         MTRefreshCreator creator = new MTRefreshCreator(getActivity(), mRecyclerView);
         mRecyclerView.addRefreshViewCreator(creator);
         mRecyclerView.setOnRefreshListener(this);
-        /*StickyRefreshCreator creator = new StickyRefreshCreator(getActivity(), mRecyclerView);
-        mRecyclerView.addRefreshViewCreator(creator);
-        mRecyclerView.setOnRefreshListener(this);*/
 
         //普通头部
         BannerView banner = (BannerView) LayoutInflater.from(getActivity())
                 .inflate(R.layout.just_a_banner_view, mRecyclerView, false);
         List<String> bannerDatas = new ArrayList<>();
-        bannerDatas.add("https://lh6.googleusercontent.com/-55osAWw3x0Q/URquUtcFr5I/AAAAAAAAAbs/rWlj1RUKrYI/s160-c/A%252520Photographer.jpg");
-        bannerDatas.add("https://lh4.googleusercontent.com/--dq8niRp7W4/URquVgmXvgI/AAAAAAAAAbs/-gnuLQfNnBA/s160-c/A%252520Song%252520of%252520Ice%252520and%252520Fire.jpg");
-        bannerDatas.add("https://lh5.googleusercontent.com/-7qZeDtRKFKc/URquWZT1gOI/AAAAAAAAAbs/hqWgteyNXsg/s160-c/Another%252520Rockaway%252520Sunset.jpg");
-        bannerDatas.add("https://lh3.googleusercontent.com/--L0Km39l5J8/URquXHGcdNI/AAAAAAAAAbs/3ZrSJNrSomQ/s160-c/Antelope%252520Butte.jpg");
-        BannerDataAdapter bannerDataAdapter = new BannerDataAdapter(bannerDatas, getActivity(), null);
+        bannerDatas.add("https://img3.doubanio.com/lpic/s29497411.jpg");
+        bannerDatas.add("https://img3.doubanio.com/lpic/s29449712.jpg");
+        bannerDatas.add("https://img3.doubanio.com/lpic/s29462473.jpg");
+        bannerDatas.add("https://img1.doubanio.com/lpic/s29474288.jpg");
+        List<String> bannerDescs = new ArrayList<>();
+        bannerDescs.add("这个世界不欠你");
+        bannerDescs.add("这样写出好故事");
+        bannerDescs.add("意外的旅客");
+        bannerDescs.add("时间地图");
+
+        BannerDataAdapter bannerDataAdapter = new BannerDataAdapter(bannerDatas, getActivity(), bannerDescs);
         banner.setAdapter(bannerDataAdapter);
         banner.startRoll();
         mRecyclerView.addHeaderView(banner);
 
-
         SimpleLoadRefreshCreator creator1 = new SimpleLoadRefreshCreator(getActivity(), mRecyclerView);
         mRecyclerView.addLoadViewCreator(creator1);
         mRecyclerView.setOnLoadMoreListener(this);
-        /*//刷新的尾部
-        DefaultLoadRefreshCreator defaultLoadRefreshCreator = new DefaultLoadRefreshCreator();
-        mRecyclerView.addLoadViewCreator(defaultLoadRefreshCreator);
-        mRecyclerView.setOnLoadMoreListener(this);*/
-        /*StickyLoadRefreshCreator creator1 = new StickyLoadRefreshCreator(getActivity(), mRecyclerView);
-        mRecyclerView.addLoadViewCreator(creator1);
-        mRecyclerView.setOnLoadMoreListener(this);*/
 
         //点击事件传出
         mListAdapter2.setItemClickListener(new ItemClickListener() {
@@ -191,7 +186,6 @@ public class BookListFragment extends BaseFragment
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         bookListPresenter.loadBooks(null, tag, 0, count, fields);
-
     }
 
     /**

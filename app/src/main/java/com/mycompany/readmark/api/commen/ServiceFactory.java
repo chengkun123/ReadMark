@@ -6,6 +6,7 @@ import com.mycompany.readmark.BaseApplication;
 import com.mycompany.readmark.utils.commen.NetworkUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -30,6 +31,46 @@ public class ServiceFactory {
     private static final int DEFAULT_MAX_AGE = 60 * 60;
     private static final int DEFAULT_MAX_STALE_ONLINE = DEFAULT_MAX_AGE * 24;
     private static final int DEFAULT_MAX_STALE_OFFLINE = DEFAULT_MAX_AGE * 24 * 7;
+
+    private static final Interceptor REQUEST_INTERCEPTOR = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            int maxStale = DEFAULT_MAX_STALE_ONLINE;
+            //向服务期请求数据缓存1个小时
+            CacheControl tempCacheControl = new CacheControl.Builder()
+//                .onlyIfCached()
+                    .maxStale(5, TimeUnit.SECONDS)
+                    .build();
+            request = request.newBuilder()
+                    .cacheControl(tempCacheControl)
+                    .build();
+            return chain.proceed(request);
+        }
+    };
+
+    private static final Interceptor RESPONSE_INTERCEPTOR = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            //针对那些服务器不支持缓存策略的情况下，使用强制修改响应头，达到缓存的效果
+            //响应拦截只不过是出于规范，向服务器发出请求，至于服务器搭不搭理我们我们不管他，我们在响应里面做手脚，有网没有情况下的缓存策略
+            Request request = chain.request();
+            Response originalResponse = chain.proceed(request);
+            int maxAge;
+            // 缓存的数据
+            if (!NetworkUtils.isConnected(BaseApplication.getApplication())) {
+                maxAge = DEFAULT_MAX_STALE_OFFLINE;
+            } else {
+                maxAge = DEFAULT_MAX_STALE_ONLINE;
+            }
+            return originalResponse.newBuilder()
+                    .removeHeader("Pragma")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
+                    .removeHeader("Cache-Control")
+                    .header("Cache-Control", "public, max-age=" + maxAge)
+                    .build();
+        }
+    };
+
 
     public static OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
@@ -77,8 +118,8 @@ public class ServiceFactory {
     * 备用方案
     *
     * */
-/*
-    private static final Interceptor REQUEST_INTERCEPTOR = chain -> {
+
+    /*private static final Interceptor REQUEST_INTERCEPTOR = chain -> {
         Request request = chain.request();
         int maxStale = DEFAULT_MAX_STALE_ONLINE;
         //向服务期请求数据缓存1个小时
@@ -90,8 +131,12 @@ public class ServiceFactory {
                 .cacheControl(tempCacheControl)
                 .build();
         return chain.proceed(request);
-    };
+    };*/
 
+
+
+
+/*
     private static final Interceptor RESPONSE_INTERCEPTOR = chain -> {
         //针对那些服务器不支持缓存策略的情况下，使用强制修改响应头，达到缓存的效果
         //响应拦截只不过是出于规范，向服务器发出请求，至于服务器搭不搭理我们我们不管他，我们在响应里面做手脚，有网没有情况下的缓存策略

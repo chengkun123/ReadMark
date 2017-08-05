@@ -1,20 +1,31 @@
 package com.mycompany.readmark.ui.activity;
 
+import android.app.Activity;
+import android.app.IntentService;
 import android.app.Service;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -22,6 +33,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -93,6 +105,9 @@ public class MainActivity extends BaseSkinActivity
             mFragmentManager = getSupportFragmentManager();
         }
 
+        NavigationView navigationView = (NavigationView) ((Activity)(mNavigationView.getContext())).getWindow().getDecorView().findViewById(R.id.nav_view);
+        ViewGroup.LayoutParams params  = navigationView.getLayoutParams();
+
         if(savedInstanceState == null){
             mCurrentFragment = HomeFragment.newInstance();
             mFragmentManager.beginTransaction()
@@ -100,23 +115,11 @@ public class MainActivity extends BaseSkinActivity
                     .commit();
         }
         mSkinManager = SkinManager.getInstance();
-        /*if(mMyThemeChanger == null){
-            mMyThemeChanger = MyThemeChanger.getMyThemeChanger(this);
-        }*/
+
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fl_content);
-        /*mMyThemeChanger.addViewSetter(new ViewBgColorSetter(frameLayout, R.attr.myBackground));
-        mMyThemeChanger.addViewSetter(new ViewBgColorSetter(mNavigationView, R.attr.myBackground));*/
         initNavView();
     }
 
-    /*private void initTheme() {
-        mThemeChangeHelper= ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext());
-        if(mThemeChangeHelper.isDay()){
-            setTheme(R.style.DayTheme);
-        }else{
-            setTheme(R.style.NightTheme);
-        }
-    }*/
 
     private void initNavView(){
         MenuItem item = mNavigationView.getMenu().findItem(R.id.nav_theme);
@@ -145,15 +148,8 @@ public class MainActivity extends BaseSkinActivity
 
             }
         });
-        /*mThemeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mThemeChangeHelper.setMode(isChecked ? DayNight.NIGHT : DayNight.DAY);
-                mMyThemeChanger.setTheme(isChecked ? R.style.NightTheme : R.style.DayTheme);
-            }
-        });*/
-    }
 
+    }
 
     public void setToolbar(Toolbar toolbar){
         if(toolbar != null){
@@ -173,72 +169,6 @@ public class MainActivity extends BaseSkinActivity
         }
     }
 
-    /*public void setThemeSetter(View rootView){
-        //Log.e("setThemeSetter", "调用了");
-
-        AppBarLayout appBarLayout = (AppBarLayout) rootView.findViewById(R.id.app_bar);
-        if(appBarLayout != null){
-            //Log.e("appbar", "不空");
-            Log.e("Context是？", (appBarLayout.getContext() == MainActivity.this)+"");
-            ViewBgColorSetter viewBgColorSetter = new ViewBgColorSetter(appBarLayout, R.attr.colorPrimary);
-            mMyThemeChanger.addViewSetter(viewBgColorSetter);
-        }
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        if(toolbar != null){
-
-            Log.e("Context是？", (toolbar.getContext() == MainActivity.this)+"");
-            ViewBgColorSetter toolbarSetter = new ViewBgColorSetter(toolbar, R.attr.colorPrimary);
-            mMyThemeChanger.addViewSetter(toolbarSetter);
-        }
-        TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
-        if(tabLayout != null){
-            Log.e("Context是？", (tabLayout.getContext() == MainActivity.this)+"");
-            ViewBgColorSetter tablayoutSetter = new ViewBgColorSetter(tabLayout, R.attr.colorPrimary);
-            mMyThemeChanger.addViewSetter(tablayoutSetter);
-            *//*ViewTextColorSetter tablayouttextSetter = new ViewTextColorSetter(tabLayout, R.attr.myTextColor);
-            mMyThemeChanger.addViewSetter(tablayouttextSetter);*//*
-
-        }
-
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        if(recyclerView != null){
-            Log.e("Context是？", (recyclerView.getContext() == MainActivity.this)+"");
-            //Log.e("recycle", "不空");
-            ListAndRecyclerSetter listAndRecyclerSetter = new ListAndRecyclerSetter(recyclerView);
-            listAndRecyclerSetter.addSchemedChildViewBgColor(R.id.book_list_cardview, R.attr.myBackground)
-                    .addSchemedChildViewBgColor(R.id.book_shelf_cardview, R.attr.myBackground)
-                    .addSchemedChildViewBgColor(R.id.book_list_item_layout, R.attr.myBackground)
-                    .addSchemedChildViewBgColor(R.id.book_list_item_text_layout, R.attr.myBackground)
-                    .addSchemedChildViewBgColor(R.id.book_list_desc_layout, R.attr.myBackground)
-                    .addSchemedChildViewTextColor(R.id.tv_book_title, R.attr.myTextColor)
-                    .addSchemedChildViewTextColor(R.id.tv_hots_num, R.attr.myTextColor)
-                    .addSchemedChildViewTextColor(R.id.tv_book_info, R.attr.myTextColor)
-                    .addSchemedChildViewTextColor(R.id.tv_book_description, R.attr.myTextColor);
-            ViewBgColorSetter rviewBgColorSetter = new ViewBgColorSetter(recyclerView, R.attr.myBackground);
-            mMyThemeChanger.addViewSetter(listAndRecyclerSetter);
-            mMyThemeChanger.addViewSetter(rviewBgColorSetter);
-        }
-    }*/
-
-    /*public void clearThemeSetter(View rootView){
-        Log.e("clearThemeSetter", "调用了");
-        mMyThemeChanger.deleteViewSetter(rootView);
-    }*/
-
-
-    /*public void setFab(FloatingActionButton fab) {
-        mFab = fab;
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                startActivity(intent);
-
-                *//*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*//*
-            }
-        });
-    }*/
 
     @Override
     protected void initEvents() {
@@ -273,15 +203,15 @@ public class MainActivity extends BaseSkinActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        int menuId = R.menu.menu_empty;
+        /*int menuId = R.menu.menu_empty;
         if(mCurrentFragment instanceof HomeFragment){
             //不知道加什么功能
         }else if(mCurrentFragment instanceof BookshelfFragment){
             menuId = R.menu.menu_bookshelf;
         }
         getMenuInflater().inflate(menuId, menu);
-        mCurrentFragment.onCreateOptionsMenu(menu, getMenuInflater());
-        return true;
+        mCurrentFragment.onCreateOptionsMenu(menu, getMenuInflater());*/
+        return super.onCreateOptionsMenu(menu);
     }
 
 

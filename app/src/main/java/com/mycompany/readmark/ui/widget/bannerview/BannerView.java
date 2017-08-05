@@ -1,6 +1,7 @@
 package com.mycompany.readmark.ui.widget.bannerview;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,6 +30,7 @@ public class BannerView extends RelativeLayout {
     private TextView mBannerDesc;
     private LinearLayout mDotContainerLayout;
     private View mBottomView;
+    private DotView mCurrentDot;
 
     private BannerDataAdapter mAdapter;
 
@@ -138,6 +140,7 @@ public class BannerView extends RelativeLayout {
         oldDot.setDrawable(mIndicatorNormalDrawable);
         mCurrentDotPosition = position;
         DotView currentDot = (DotView) mDotContainerLayout.getChildAt(mCurrentDotPosition % mAdapter.getCount());
+        mCurrentDot = currentDot;
         currentDot.setDrawable(mIndicatorFocusDrawable);
         //改变Desc
         String bannerDesc = mAdapter.getBannerDesc(mCurrentDotPosition % mAdapter.getCount());
@@ -154,6 +157,7 @@ public class BannerView extends RelativeLayout {
         //在容器中添加原点
         for (int i=0; i<count; i++){
             DotView indicator = new DotView(mContext);
+
             //大小
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(mDotSize, mDotSize);
@@ -161,6 +165,7 @@ public class BannerView extends RelativeLayout {
             params.leftMargin = params.rightMargin = mDotDistance;
             indicator.setLayoutParams(params);
             if(i == 0){
+                mCurrentDot = indicator;
                 indicator.setDrawable(mIndicatorFocusDrawable);
             }else{
                 indicator.setDrawable(mIndicatorNormalDrawable);
@@ -187,7 +192,25 @@ public class BannerView extends RelativeLayout {
        // Log.e(TAG, "onDetachedFromWindow");
     }
 
+    /**
+     * 设置描述的颜色
+     * @param color
+     */
+    public void setBannerDescColor(ColorStateList color){
+        mBannerDesc.setTextColor(color);
+    }
 
+
+    /**
+     * 设置DOtView的focus时的颜色
+     * @param color
+     */
+    public void setBannerDotColor(ColorStateList color){
+        mIndicatorFocusDrawable = new ColorDrawable(color.getDefaultColor());
+        if(mCurrentDot != null) {
+            mCurrentDot.setDrawable(mIndicatorFocusDrawable);
+        }
+    }
 
 
     /**

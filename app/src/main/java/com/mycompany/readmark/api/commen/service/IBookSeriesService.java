@@ -15,7 +15,8 @@ import rx.Observable;
 
 public interface IBookSeriesService {
     @GET("book/series/{seriesId}/books")
-    Observable<Response<BookSeriesListResponse>> getBookSeries(
+    Observable<Response<BookSeriesListResponse>>
+    getBookSeries(
             @Path("seriesId") String seriesId
             , @Query("start") int start
             , @Query("count") int count

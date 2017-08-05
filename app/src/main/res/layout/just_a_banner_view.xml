@@ -10,6 +10,7 @@
     app:dotFocusDrawable="@color/colorAccent"
     app:dotNormalDrawable="@color/secondary_text"
     app:descColor="@color/white"
-    app:bottomColor="@color/color8A9599"
     >
+
+    <!--  app:bottomColor="@color/color8A9599" -->
 </com.mycompany.readmark.ui.widget.bannerview.BannerView>

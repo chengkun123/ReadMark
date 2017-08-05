@@ -70,6 +70,7 @@
         android:minHeight="500dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!--这个Behavior的一个作用是把自身放在appbar下面-->
     </android.support.v7.widget.RecyclerView>
 
     <android.support.design.widget.FloatingActionButton
@@ -78,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_pets_dark"
-
+        app:backgroundTint="@color/colorAccent"
         app:borderWidth="0dp"
         app:layout_anchor="@id/appBarLayout"
         app:layout_anchorGravity="bottom|right" />

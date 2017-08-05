@@ -21,6 +21,8 @@ import com.mycompany.readmark.api.presenter.impl.BookshelfPresenterImpl;
 import com.mycompany.readmark.api.view.IBookListView;
 import com.mycompany.readmark.bean.table.Bookshelf;
 import com.mycompany.readmark.holder.WaveLoadingViewHolder;
+import com.mycompany.readmark.themechangeframeV2.skin.SkinManager;
+import com.mycompany.readmark.themechangeframeV2.skin.callback.ISkinChangeListener;
 import com.mycompany.readmark.ui.widget.WaveLoadingView;
 
 /**
@@ -40,7 +42,7 @@ public class BookshelfProgressFragment extends BaseFragment implements IBookList
     private EditText mCurrentPage;
     private TextView mTotalPages;
     private Button mConfirmButton;
-    private Button mCancelButton;
+    //private Button mCancelButton;
 
 
 
@@ -100,7 +102,7 @@ public class BookshelfProgressFragment extends BaseFragment implements IBookList
         mCurrentPage = (EditText) mRootView.findViewById(R.id.edit_current_page);
         mTotalPages = (TextView) mRootView.findViewById(R.id.text_total_page);
         mConfirmButton = (Button) mRootView.findViewById(R.id.button_confirm);
-        mCancelButton = (Button) mRootView.findViewById(R.id.button_cancel);
+        //mCancelButton = (Button) mRootView.findViewById(R.id.button_cancel);
 
 
         mRedPicker.post(new Runnable() {
@@ -318,12 +320,12 @@ public class BookshelfProgressFragment extends BaseFragment implements IBookList
         });
 
 
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
+        /*mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
-        });
+        });*/
 
     }
 
@@ -369,5 +371,13 @@ public class BookshelfProgressFragment extends BaseFragment implements IBookList
 
     public interface OnProgressConfirmedListener{
         void onProgressConfirmed(Bookshelf bookshelf, boolean isQualified);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        /*SkinManager
+                .getInstance()
+                .clearRegisteredDetachedView((ISkinChangeListener) getActivity());*/
     }
 }

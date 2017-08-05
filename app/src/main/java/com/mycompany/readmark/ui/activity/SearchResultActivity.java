@@ -1,5 +1,6 @@
 package com.mycompany.readmark.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,6 +20,10 @@ import com.mycompany.readmark.bean.http.BookListResponse;
 import com.mycompany.readmark.themechangeframe.ThemeChangeHelper;
 import com.mycompany.readmark.themechangeframeV2.skin.BaseSkinActivity;
 import com.mycompany.readmark.ui.adapter.BookListAdapter;
+import com.mycompany.readmark.ui.adapter.BookListAdapter2;
+import com.mycompany.readmark.ui.adapter.commen.ItemClickListener;
+import com.mycompany.readmark.ui.adapter.commen.LoadRefreshRecyclerView;
+import com.mycompany.readmark.ui.adapter.commen.MultiTypeSupport;
 import com.mycompany.readmark.utils.commen.UIUtils;
 
 import java.util.ArrayList;
@@ -31,7 +36,7 @@ import butterknife.ButterKnife;
  * Created by Lenovo.
  */
 
-public class SearchResultActivity extends BaseSkinActivity implements IBookListView, SwipeRefreshLayout.OnRefreshListener {
+public class SearchResultActivity extends BaseSkinActivity implements IBookListView{
     private static String q;
     private static final String fields = "id,title,subtitle,origin_title,rating,author,translator,publisher,pubdate,summary,images,pages,price,binding,isbn13";
     private static final int count = 20;
@@ -43,9 +48,9 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
     RecyclerView mRecyclerView;
 
     private IBookListPresenter mBookListPresenter;
-    private GridLayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     private List<BookInfoResponse> mBookInfoResponses;
-    private BookListAdapter mBookListAdapter;
+    private BookListAdapter2 mBookListAdapter;
 
     private boolean isLoadAll = false;
 
@@ -58,13 +63,13 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
         initEvents();
     }
 
-    private void initTheme() {
+    /*private void initTheme() {
         if(ThemeChangeHelper.getThemeChangeHelper(UIUtils.getContext()).isDay()){
             setTheme(R.style.DayTheme);
         }else{
             setTheme(R.style.NightTheme);
         }
-    }
+    }*/
     @Override
     protected void initEvents() {
         q = getIntent().getStringExtra("q");
@@ -74,19 +79,40 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
                 R.color.recycler_color3, R.color.recycler_color4);
         mSwipeRefreshLayout.setOnRefreshListener(this);*/
 
-        mLayoutManager = new GridLayoutManager(this, 1);
-        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+        //mLayoutManager = new GridLayoutManager(this, 1);
+        mLayoutManager = new LinearLayoutManager(this);
+        /*mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 return mBookListAdapter.getItemColumnSpan(position);
             }
-        });
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        });*/
+        //mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mBookInfoResponses = new ArrayList<>();
-        mBookListAdapter = new BookListAdapter(this, mBookInfoResponses, 1);
+        mBookListAdapter = new BookListAdapter2(this, mBookInfoResponses
+                , new MultiTypeSupport<BookInfoResponse>() {
+            @Override
+            public int getLayoutId(BookInfoResponse item) {
+                //这里一般根据BookInfoResponse去返回。
+                return R.layout.item_book_list;
+            }
+        });
+
+
+        mBookListAdapter.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Bundle b = new Bundle();
+                b.putSerializable("book_info", mBookInfoResponses.get(position));
+                Intent intent = new Intent(UIUtils.getContext(), BookDetailActivity.class);
+                intent.putExtras(b);
+                UIUtils.startActivity(intent);
+            }
+        });
+
         mRecyclerView.setAdapter(mBookListAdapter);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        //mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private int lastVisibleItem;
             @Override
@@ -103,15 +129,9 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
                 }
             }
         });*/
-
+        mBookListPresenter.loadBooks(q, null, 0, count, fields);
         //立即加载数据
-        onRefresh();
-    }
-
-    private void onLoadMore(){
-        if(!isLoadAll){
-
-        }
+        //onRefresh();
     }
 
 
@@ -151,7 +171,7 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
     /**
      * 重新刷新
      * @param result
-     */
+     * */
     @Override
     public void refreshData(Object result) {
         if(result instanceof BookListResponse){
@@ -169,23 +189,25 @@ public class SearchResultActivity extends BaseSkinActivity implements IBookListV
      */
     @Override
     public void addData(Object result) {
-        if(result instanceof BookListResponse){
+        /*if(result instanceof BookListResponse){
             mBookInfoResponses.addAll(((BookListResponse) result).getBooks());
             mBookListAdapter.notifyDataSetChanged();
             page++;
-        }
-        //mSwipeRefreshLayout.setRefreshing(false);
+        }*/
+
+
     }
 
-    @Override
+
+/*    @Override
     public void onRefresh() {
-        /*if(!mSwipeRefreshLayout.isRefreshing()){
+        *//*if(!mSwipeRefreshLayout.isRefreshing()){
             mBookListPresenter.loadBooks(q, null, 0, count, fields);
             page = 1;
-        }*/
+        }*//*
         mBookListPresenter.loadBooks(q, null, 0, count, fields);
         page = 1;
-    }
+    }*/
 
 
     @Override

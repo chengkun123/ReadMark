@@ -3,9 +3,12 @@ package com.mycompany.readmark.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.mycompany.readmark.themechangeframeV2.skin.BaseSkinActivity;
 
 import butterknife.ButterKnife;
 
@@ -50,4 +53,11 @@ public abstract class BaseFragment extends Fragment {
      */
     protected abstract void initData(boolean isSavedNull);
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("onResume", "调用了");
+        ((BaseSkinActivity)getActivity()).recycleSkin();
+    }
 }

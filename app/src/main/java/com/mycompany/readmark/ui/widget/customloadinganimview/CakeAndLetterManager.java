@@ -62,14 +62,20 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         startCakesAnim();
     }
 
+    /**
+     * 添加字母
+     * @param letter
+     */
     private void addLetter(Letter letter){
         if(letter != null){
             mLetters.add(letter);
-
         }
-
     }
 
+    /***
+     * 添加cake并且把manager注册为listener监听cake的变化
+     * @param cake
+     */
     private void addAndInitCake(Cake cake){
         if(cake != null){
             mCakes.add(cake);
@@ -78,6 +84,9 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         }
     }
 
+    /**
+     * 开始所有cake的动画
+     */
     public void startCakesAnim(){
         isEnding = false;
         mEndNum = 0;
@@ -86,12 +95,19 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         }
     }
 
+    /**
+     * 开始所有letter的动画
+     */
     private void startLetterAnim(){
         for (Letter letter : mLetters){
             letter.startAnim();
         }
     }
 
+    /**
+     * manager让cake和letter绘制自身
+     * @param canvas
+     */
     public void drawTheWorld(Canvas canvas){
         for(Cake cake : mCakes){
             cake.drawSelf(canvas);
@@ -99,9 +115,12 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         for(Letter letter : mLetters){
             letter.drawSelf(canvas);
         }
-
     }
 
+
+    /**
+     * cake的变化结束，cake进入移动阶段（标志位改变）
+     */
     private void prepareToShowText(){
         mEndNum = 0;
         for(Cake cake : mCakes){
@@ -109,6 +128,9 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         }
     }
 
+    /**
+     * 当cake变化结束
+     */
     @Override
     public void onCakeChangeAnimatorEnd() {
         mEndNum ++;
@@ -117,6 +139,9 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         }
     }
 
+    /**
+     * 当cake移动结束，开始letter的动画
+     */
     @Override
     public void onMoveEnd() {
         mEndNum ++;
@@ -125,6 +150,9 @@ public class CakeAndLetterManager implements Cake.AnimatorStateListener {
         }
     }
 
+    /**
+     * 所有动画结束的时候，通知View
+     */
     @Override
     public void onAllAnimatorEnd() {
         mView.onAllAnimEnd();
